@@ -99,7 +99,10 @@ describe('Model Configuration Tests', () => {
 
       // READ: Get configuration and verify it matches
       const retrievedConfig = modelConfigHelper.getModelConfig(testModelId, testProviderId)
-      expect(retrievedConfig).toEqual(testConfig)
+      expect(retrievedConfig).toEqual({
+        ...testConfig,
+        isUserDefined: true
+      })
 
       // UPDATE: Modify configuration
       const updatedConfig = { ...testConfig, maxTokens: 12000 }
@@ -122,7 +125,9 @@ describe('Model Configuration Tests', () => {
         vision: false,
         functionCall: false,
         reasoning: false,
-        type: ModelType.Chat
+        type: ModelType.Chat,
+        isUserDefined: false,
+        thinkingBudget: undefined
       })
     })
 
@@ -212,7 +217,10 @@ describe('Model Configuration Tests', () => {
 
       // Step 3: Verify user config takes priority
       const retrievedConfig = modelConfigHelper.getModelConfig(testModelId, testProviderId)
-      expect(retrievedConfig).toEqual(userConfig)
+      expect(retrievedConfig).toEqual({
+        ...userConfig,
+        isUserDefined: true
+      })
       expect(retrievedConfig.maxTokens).toBe(99999) // Should be user config value
       expect(retrievedConfig.contextLength).toBe(88888) // Should be user config value
       expect(retrievedConfig.temperature).toBe(0.123) // Should be user config value
@@ -284,7 +292,10 @@ describe('Model Configuration Tests', () => {
       modelConfigHelper.setModelConfig(visionModelId, testProviderId, customVisionConfig)
       const retrievedVisionConfig = modelConfigHelper.getModelConfig(visionModelId, testProviderId)
 
-      expect(retrievedVisionConfig).toEqual(customVisionConfig)
+      expect(retrievedVisionConfig).toEqual({
+        ...customVisionConfig,
+        isUserDefined: true
+      })
       expect(retrievedVisionConfig.vision).toBe(true) // User setting should override
     })
 
@@ -321,8 +332,14 @@ describe('Model Configuration Tests', () => {
       const retrievedConfig1 = modelConfigHelper.getModelConfig(modelId, provider1)
       const retrievedConfig2 = modelConfigHelper.getModelConfig(modelId, provider2)
 
-      expect(retrievedConfig1).toEqual(config1)
-      expect(retrievedConfig2).toEqual(config2)
+      expect(retrievedConfig1).toEqual({
+        ...config1,
+        isUserDefined: true
+      })
+      expect(retrievedConfig2).toEqual({
+        ...config2,
+        isUserDefined: true
+      })
       expect(retrievedConfig1.maxTokens).toBe(1111)
       expect(retrievedConfig2.maxTokens).toBe(3333)
 
@@ -333,7 +350,10 @@ describe('Model Configuration Tests', () => {
       const configAfterReset2 = modelConfigHelper.getModelConfig(modelId, provider2)
 
       expect(configAfterReset1.maxTokens).not.toBe(1111) // Should be reset
-      expect(configAfterReset2).toEqual(config2) // Should remain unchanged
+      expect(configAfterReset2).toEqual({
+        ...config2,
+        isUserDefined: true
+      }) // Should remain unchanged
     })
   })
 

@@ -7,18 +7,19 @@ describe('MessageManager', () => {
   let messageManager: MessageManager
   let mockSqlitePresenter: ISQLitePresenter
 
-  const createMockMessage = (overrides: Partial<Message> = {}): Message => ({
+  const createMockSqliteMessage = (overrides: any = {}) => ({
     id: 'msg-123',
-    conversationId: 'conv-123',
+    conversation_id: 'conv-123',
     role: 'user',
-    content: 'Test message content',
-    timestamp: Date.now(),
+    content: JSON.stringify('Test message content'), // Content should be JSON string
+    created_at: Date.now(),
+    order_seq: 1,
+    token_count: 0,
     status: 'sent',
-    usage: null,
-    parentId: null,
-    orderSeq: 1,
-    isContextEdge: 0,
-    isVariant: 0,
+    metadata: JSON.stringify({}), // Metadata should be JSON string
+    is_context_edge: 0,
+    is_variant: 0,
+    parent_id: null,
     ...overrides
   })
 
@@ -38,7 +39,9 @@ describe('MessageManager', () => {
       markMessageAsContextEdge: vi.fn(),
       clearAllMessages: vi.fn(),
       getMaxOrderSeq: vi.fn().mockResolvedValue(0),
-      getUnfinishedMessages: vi.fn().mockResolvedValue([])
+      getUnfinishedMessages: vi.fn().mockResolvedValue([]),
+      queryMessages: vi.fn(),
+      deleteAllMessagesInConversation: vi.fn()
     } as unknown as ISQLitePresenter
 
     messageManager = new MessageManager(mockSqlitePresenter)
@@ -57,6 +60,13 @@ describe('MessageManager', () => {
         model: 'gpt-4',
         provider: 'openai'
       }
+
+      // Setup mock to return the inserted message
+      const mockMessage = createMockSqliteMessage({
+        content: JSON.stringify('Hello world'),
+        metadata: JSON.stringify(metadata)
+      })
+      mockSqlitePresenter.getMessage = vi.fn().mockResolvedValue(mockMessage)
 
       const result = await messageManager.sendMessage(
         'conv-123',
@@ -94,23 +104,34 @@ describe('MessageManager', () => {
         }
       ]
 
+      const metadata = {
+        totalTokens: 50,
+        generationTime: 800,
+        firstTokenTime: 300,
+        tokensPerSecond: 0.0625,
+        contextUsage: 25,
+        inputTokens: 25,
+        outputTokens: 25,
+        model: 'gpt-4',
+        provider: 'openai'
+      }
+
+      // Setup mock to return the inserted message
+      const mockMessage = createMockSqliteMessage({
+        content: JSON.stringify(assistantContent),
+        metadata: JSON.stringify(metadata),
+        role: 'assistant',
+        parent_id: 'msg-user-123'
+      })
+      mockSqlitePresenter.getMessage = vi.fn().mockResolvedValue(mockMessage)
+
       const result = await messageManager.sendMessage(
         'conv-123',
         JSON.stringify(assistantContent),
         'assistant',
         'msg-user-123',
         false,
-        {
-          totalTokens: 50,
-          generationTime: 800,
-          firstTokenTime: 300,
-          tokensPerSecond: 0.0625,
-          contextUsage: 25,
-          inputTokens: 25,
-          outputTokens: 25,
-          model: 'gpt-4',
-          provider: 'openai'
-        }
+        metadata
       )
 
       expect(result.role).toBe('assistant')
@@ -121,14 +142,14 @@ describe('MessageManager', () => {
 
   describe('editMessage', () => {
     it('should edit message content', async () => {
-      const mockMessage = createMockMessage()
+      const mockMessage = createMockSqliteMessage()
       mockSqlitePresenter.getMessage = vi.fn().mockResolvedValue(mockMessage)
 
       const result = await messageManager.editMessage('msg-123', 'Updated content')
 
       expect(mockSqlitePresenter.updateMessage).toHaveBeenCalledWith(
         'msg-123',
-        'Updated content'
+        { content: 'Updated content' }
       )
       expect(result.content).toBe('Updated content')
     })
@@ -137,7 +158,7 @@ describe('MessageManager', () => {
       mockSqlitePresenter.getMessage = vi.fn().mockResolvedValue(null)
 
       await expect(messageManager.editMessage('invalid-id', 'content'))
-        .rejects.toThrow('Message not found')
+        .rejects.toThrow('Message invalid-id not found')
     })
   })
 
@@ -151,11 +172,22 @@ describe('MessageManager', () => {
 
   describe('retryMessage', () => {
     it('should retry assistant message', async () => {
-      const mockAssistantMessage = createMockMessage({
+      const mockAssistantMessage = createMockSqliteMessage({
         role: 'assistant',
-        parentId: 'msg-user-123'
+        parent_id: 'msg-user-123'
       })
       mockSqlitePresenter.getMessage = vi.fn().mockResolvedValue(mockAssistantMessage)
+      
+      // Mock insertMessage and the subsequent getMessage call
+      const retryMockMessage = createMockSqliteMessage({
+        role: 'assistant',
+        parent_id: 'msg-user-123',
+        id: 'msg-retry-123'
+      })
+      mockSqlitePresenter.insertMessage = vi.fn().mockResolvedValue('msg-retry-123')
+      mockSqlitePresenter.getMessage = vi.fn()
+        .mockResolvedValueOnce(mockAssistantMessage)  // First call in retryMessage
+        .mockResolvedValueOnce(retryMockMessage)      // Second call after insert
 
       const metadata: MESSAGE_METADATA = {
         totalTokens: 0,
@@ -177,7 +209,7 @@ describe('MessageManager', () => {
     })
 
     it('should throw error for non-assistant message', async () => {
-      const mockUserMessage = createMockMessage({ role: 'user' })
+      const mockUserMessage = createMockSqliteMessage({ role: 'user' })
       mockSqlitePresenter.getMessage = vi.fn().mockResolvedValue(mockUserMessage)
 
       await expect(messageManager.retryMessage('msg-123', {} as MESSAGE_METADATA))

@@ -155,13 +155,13 @@ describe('ThreadPresenter Constants', () => {
 
   describe('Template Structure', () => {
     it('should have proper template structure for standard search', () => {
-      expect(SEARCH_PROMPT_TEMPLATE).toMatch(/^#.*search results.*{{SEARCH_RESULTS}}/s)
-      expect(SEARCH_PROMPT_TEMPLATE).toMatch(/user's message.*{{USER_QUERY}}$/s)
+      expect(SEARCH_PROMPT_TEMPLATE).toMatch(/^\s*#.*search results.*{{SEARCH_RESULTS}}/s)
+      expect(SEARCH_PROMPT_TEMPLATE).toMatch(/user's message.*{{USER_QUERY}}\s*$/s)
     })
 
     it('should have proper template structure for artifacts search', () => {
-      expect(SEARCH_PROMPT_ARTIFACTS_TEMPLATE).toMatch(/^#.*search results.*{{SEARCH_RESULTS}}/s)
-      expect(SEARCH_PROMPT_ARTIFACTS_TEMPLATE).toMatch(/user's message.*{{USER_QUERY}}$/s)
+      expect(SEARCH_PROMPT_ARTIFACTS_TEMPLATE).toMatch(/^\s*#.*search results.*{{SEARCH_RESULTS}}/s)
+      expect(SEARCH_PROMPT_ARTIFACTS_TEMPLATE).toMatch(/user's message.*{{USER_QUERY}}\s*$/s)
       expect(SEARCH_PROMPT_ARTIFACTS_TEMPLATE).toContain('# Artifacts Support - MANDATORY')
     })
 

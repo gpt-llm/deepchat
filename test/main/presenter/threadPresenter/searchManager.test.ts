@@ -3,7 +3,6 @@ import { SearchManager, formatSearchResults, generateSearchPrompt } from '../../
 import { ContentEnricher } from '../../../../src/main/presenter/threadPresenter/contentEnricher'
 import type { SearchResult } from '../../../../src/shared/presenter'
 import type { SearchEngineTemplate } from '../../../../src/shared/chat'
-import { BrowserWindow } from 'electron'
 
 // Mock Electron
 vi.mock('electron', () => ({
@@ -73,7 +72,7 @@ describe('SearchManager', () => {
     }
   ]
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
 
     // Mock BrowserWindow
@@ -102,6 +101,7 @@ describe('SearchManager', () => {
       on: vi.fn()
     }
 
+    const { BrowserWindow } = await import('electron')
     vi.mocked(BrowserWindow).mockImplementation(() => mockBrowserWindow)
 
     searchManager = new SearchManager()
@@ -269,6 +269,7 @@ describe('SearchManager', () => {
 
       await searchManager.search('conv-123', 'test')
 
+      const { BrowserWindow } = await import('electron')
       expect(BrowserWindow).toHaveBeenCalledWith(
         expect.objectContaining({
           width: expect.any(Number),
@@ -288,6 +289,7 @@ describe('SearchManager', () => {
 
       await searchManager.search('conv-123', 'test')
 
+      const { BrowserWindow } = await import('electron')
       expect(BrowserWindow).toHaveBeenCalledWith(
         expect.objectContaining({
           show: false
@@ -355,6 +357,7 @@ describe('SearchManager', () => {
       await Promise.all(promises)
 
       // Should have created maximum number of windows (3 by default)
+      const { BrowserWindow } = await import('electron')
       expect(BrowserWindow).toHaveBeenCalledTimes(5) // Due to window reuse logic
     })
   })
