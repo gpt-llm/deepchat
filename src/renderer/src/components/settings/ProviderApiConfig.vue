@@ -135,6 +135,7 @@ import { Icon } from '@iconify/vue'
 import GitHubCopilotOAuth from './GitHubCopilotOAuth.vue'
 import { usePresenter } from '@/composables/usePresenter'
 import { useModelCheckStore } from '@/stores/modelCheck'
+import { useModelSelectorStore } from '@/stores/modelSelector'
 import type { LLM_PROVIDER, KeyStatus } from '@shared/presenter'
 
 interface ProviderWebsites {
@@ -148,6 +149,7 @@ interface ProviderWebsites {
 const { t } = useI18n()
 const llmProviderPresenter = usePresenter('llmproviderPresenter')
 const modelCheckStore = useModelCheckStore()
+const modelSelectorStore = useModelSelectorStore()
 
 const props = defineProps<{
   provider: LLM_PROVIDER
@@ -220,6 +222,15 @@ const refreshModels = async () => {
   isRefreshing.value = true
   try {
     await llmProviderPresenter.refreshModels(props.provider.id)
+
+    // 刷新成功后，检查是否需要触发模型选择对话框
+    // 注意：这是用户手动刷新，不是自动刷新
+    modelSelectorStore.tryTriggerDialog({
+      reason: 'models_refreshed',
+      providerId: props.provider.id,
+      automatic: false,
+      suggestedCount: 3
+    })
   } catch (error) {
     console.error('Failed to refresh models:', error)
   } finally {

@@ -191,6 +191,18 @@ export const DIALOG_EVENTS = {
   RESPONSE: 'dialog:response' // Renderer -> Main: Dialog result response
 }
 
+// Model Selection Dialog Events
+export const MODEL_SELECTOR_EVENTS = {
+  SHOW_REQUEST: 'model-selector:show-request', // Main -> Renderer: Request to show model selector
+  HIDE_REQUEST: 'model-selector:hide-request', // Main -> Renderer: Request to hide model selector
+  SELECTION_CHANGED: 'model-selector:selection-changed', // Renderer -> Main: Model selection changed
+  CONFIRMED: 'model-selector:confirmed', // Renderer -> Main: Selection confirmed
+  CANCELLED: 'model-selector:cancelled', // Renderer -> Main: Selection cancelled
+  PROVIDER_FILTER_CHANGED: 'model-selector:provider-filter-changed', // Renderer -> Main: Provider filter changed
+  SEARCH_QUERY_CHANGED: 'model-selector:search-query-changed', // Renderer -> Main: Search query changed
+  FAVORITE_TOGGLED: 'model-selector:favorite-toggled' // Renderer -> Main: Model favorite status toggled
+}
+
 // Knowledge base events
 export const RAG_EVENTS = {
   FILE_UPDATED: 'rag:file-updated', // File status update

@@ -11,6 +11,24 @@ import { useMcpStore } from '@/stores/mcp'
 import { useUpgradeStore } from '@/stores/upgrade'
 import { useThrottleFn } from '@vueuse/core'
 
+// 导入模型检测相关类型（从后端传递到前端）
+export interface ModelDetectionResult {
+  state: 'no_enabled_models' | 'empty_model_list' | 'all_models_disabled' | 'has_enabled_models'
+  enabledProvidersCount: number
+  enabledModelsCount: number
+  providerDetails: Array<{
+    providerId: string
+    providerName: string
+    isEnabled: boolean
+    totalModelsCount: number
+    enabledModelsCount: number
+    hasModels: boolean
+    isFirstTimeSetup: boolean
+  }>
+  shouldShowGuidance: boolean
+  suggestedActions: string[]
+}
+
 // 定义字体大小级别对应的 Tailwind 类
 const FONT_SIZE_CLASSES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl']
 const DEFAULT_FONT_SIZE_LEVEL = 1 // 对应 'text-base'
@@ -42,6 +60,11 @@ export const useSettingsStore = defineStore('settings', () => {
   // 搜索助手模型相关
   const searchAssistantModelRef = ref<RENDERER_MODEL_META | null>(null)
   const searchAssistantProviderRef = ref<string>('')
+
+  // 模型检测相关状态
+  const modelDetectionResult = ref<ModelDetectionResult | null>(null)
+  const isModelDetectionDialogVisible = ref<boolean>(false)
+  const lastModelDetectionTime = ref<number>(0)
 
   // 搜索助手模型计算属性
   const searchAssistantModel = computed(() => searchAssistantModelRef.value)
@@ -570,6 +593,9 @@ export const useSettingsStore = defineStore('settings', () => {
     // 优先检查提供商是否启用
     const provider = providers.value.find((p) => p.id === providerId)
     if (!provider || !provider.enable) return
+
+    // 记录刷新时间戳，用于模型检测
+    configP.recordProviderRefreshTimestamp(providerId)
 
     // Ollama 提供商的特殊处理
     if (providerId === 'ollama') {
@@ -1598,6 +1624,106 @@ export const useSettingsStore = defineStore('settings', () => {
     await refreshProviderModels(providerId)
   }
 
+  // ===================== 模型检测相关方法 =====================
+
+  /**
+   * 检测指定 provider 是否有启用的模型
+   */
+  const detectProviderEnabledModels = async (providerId: string) => {
+    try {
+      return await configP.detectProviderEnabledModels(providerId)
+    } catch (error) {
+      console.error(`检测 provider ${providerId} 模型失败:`, error)
+      return {
+        hasEnabledModels: false,
+        totalModels: 0,
+        enabledModels: 0,
+        isFirstTimeSetup: false
+      }
+    }
+  }
+
+  /**
+   * 全面检测用户的模型启用状态
+   */
+  const detectOverallModelState = async (): Promise<ModelDetectionResult | null> => {
+    try {
+      const result = await configP.detectOverallModelState()
+      modelDetectionResult.value = result
+      lastModelDetectionTime.value = Date.now()
+      return result
+    } catch (error) {
+      console.error('检测整体模型状态失败:', error)
+      return null
+    }
+  }
+
+  /**
+   * 检查是否应该显示模型检测对话框
+   */
+  const shouldShowModelDetectionDialog = async (): Promise<boolean> => {
+    try {
+      return await configP.shouldShowModelDetectionDialog()
+    } catch (error) {
+      console.error('检查是否显示模型检测对话框失败:', error)
+      return false
+    }
+  }
+
+  /**
+   * 显示模型检测对话框
+   */
+  const showModelDetectionDialog = async (): Promise<void> => {
+    const shouldShow = await shouldShowModelDetectionDialog()
+    if (shouldShow) {
+      const result = await detectOverallModelState()
+      if (result && result.shouldShowGuidance) {
+        isModelDetectionDialogVisible.value = true
+        // 更新后端的最后显示时间
+        await configP.updateLastModelDetectionDialogTime()
+      }
+    }
+  }
+
+  /**
+   * 隐藏模型检测对话框
+   */
+  const hideModelDetectionDialog = (): void => {
+    isModelDetectionDialogVisible.value = false
+  }
+
+  /**
+   * 格式化模型检测结果为用户友好的消息
+   */
+  const formatModelDetectionMessage = (result: ModelDetectionResult) => {
+    try {
+      return configP.formatModelDetectionMessage(result)
+    } catch (error) {
+      console.error('格式化模型检测消息失败:', error)
+      return {
+        title: '模型配置检测',
+        message: '无法获取模型状态信息',
+        actions: ['前往设置页面']
+      }
+    }
+  }
+
+  /**
+   * 主动触发模型检测（用于关键操作后）
+   */
+  const triggerModelDetection = async (): Promise<void> => {
+    setTimeout(async () => {
+      await showModelDetectionDialog()
+    }, 1000) // 延迟1秒执行，避免与其他操作冲突
+  }
+
+  /**
+   * 计算属性：是否有启用的模型
+   */
+  const hasEnabledModels = computed(() => {
+    return enabledModels.value.some((provider) => provider.models.length > 0)
+  })
+
   return {
     providers,
     fontSizeLevel, // Expose font size level
@@ -1681,6 +1807,18 @@ export const useSettingsStore = defineStore('settings', () => {
     setupProviderListener,
     getModelConfig,
     setModelConfig,
-    resetModelConfig
+    resetModelConfig,
+    // 模型检测相关
+    modelDetectionResult,
+    isModelDetectionDialogVisible,
+    lastModelDetectionTime,
+    hasEnabledModels,
+    detectProviderEnabledModels,
+    detectOverallModelState,
+    shouldShowModelDetectionDialog,
+    showModelDetectionDialog,
+    hideModelDetectionDialog,
+    formatModelDetectionMessage,
+    triggerModelDetection
   }
 })

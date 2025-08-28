@@ -82,6 +82,7 @@ import ModelScopeMcpSync from './ModelScopeMcpSync.vue'
 import ProviderModelManager from './ProviderModelManager.vue'
 import ProviderDialogContainer from './ProviderDialogContainer.vue'
 import { useModelCheckStore } from '@/stores/modelCheck'
+import { useModelSelectorStore } from '@/stores/modelSelector'
 import { levelToValueMap, safetyCategories } from '@/lib/gemini'
 import type { SafetyCategoryKey, SafetySettingValue } from '@/lib/gemini'
 import { useThrottleFn } from '@vueuse/core'
@@ -111,6 +112,7 @@ const props = defineProps<{
 
 const settingsStore = useSettingsStore()
 const modelCheckStore = useModelCheckStore()
+const modelSelectorStore = useModelSelectorStore()
 const apiKey = ref(props.provider.apiKey || '')
 const apiHost = ref(props.provider.baseUrl || '')
 const azureApiVersion = ref('')
@@ -161,6 +163,17 @@ const validateApiKey = async () => {
       showCheckModelDialog.value = true
       // 验证成功后刷新当前provider的模型列表
       await settingsStore.refreshProviderModels(props.provider.id)
+
+      // API key验证成功后，检查是否需要触发模型选择对话框
+      modelSelectorStore.tryTriggerDialog({
+        reason: 'api_key_verified',
+        providerId: props.provider.id,
+        automatic: false,
+        suggestedCount: 5,
+        title: 'API密钥验证成功！',
+        description:
+          '您的API密钥已验证成功，建议选择5个或更多模型以获得最佳使用体验。您可以随时在设置中修改模型选择。'
+      })
     } else {
       console.log('验证失败', resp.errorMsg)
       checkResult.value = false

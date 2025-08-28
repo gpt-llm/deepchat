@@ -16,6 +16,8 @@ import { useI18n } from 'vue-i18n'
 import TranslatePopup from '@/components/popup/TranslatePopup.vue'
 import ModelCheckDialog from '@/components/settings/ModelCheckDialog.vue'
 import { useModelCheckStore } from '@/stores/modelCheck'
+import ModelSelectionDialog from '@/components/ui/ModelSelectionDialog.vue'
+import { useModelSelectorStore } from '@/stores/modelSelector'
 import MessageDialog from './components/ui/MessageDialog.vue'
 
 const route = useRoute()
@@ -27,6 +29,7 @@ const settingsStore = useSettingsStore()
 const themeStore = useThemeStore()
 const langStore = useLanguageStore()
 const modelCheckStore = useModelCheckStore()
+const modelSelectorStore = useModelSelectorStore()
 const { t } = useI18n()
 // 错误通知队列及当前正在显示的错误
 const errorQueue = ref<Array<{ id: string; title: string; message: string; type: string }>>([])
@@ -340,6 +343,21 @@ onBeforeUnmount(() => {
           if (!open) modelCheckStore.closeDialog()
         }
       "
+    />
+    <!-- 全局模型选择弹窗 -->
+    <ModelSelectionDialog
+      :open="modelSelectorStore.isDialogOpen"
+      :models="modelSelectorStore.availableModels"
+      :title="modelSelectorStore.dialogTitle"
+      :description="modelSelectorStore.dialogDescription"
+      :allow-multiple="true"
+      @update:open="
+        (open) => {
+          if (!open) modelSelectorStore.closeDialog()
+        }
+      "
+      @confirm="modelSelectorStore.confirmSelection"
+      @cancel="modelSelectorStore.closeDialog"
     />
   </div>
 </template>

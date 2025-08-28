@@ -26,5 +26,23 @@
     "code": "代码",
     "writing": "写作",
     "analysis": "分析"
+  },
+  "selection": {
+    "title": "选择模型",
+    "searchPlaceholder": "按名称或ID搜索模型...",
+    "filterByType": "按类型筛选",
+    "filterByProvider": "按提供商筛选",
+    "allTypes": "所有类型",
+    "allProviders": "所有提供商",
+    "selectAll": "全选",
+    "selectNone": "全不选",
+    "noModelsFound": "未找到符合条件的模型",
+    "selectedCount": "已选择 {count} 个模型",
+    "clear": "清除选择"
+  },
+  "capabilities": {
+    "vision": "视觉支持",
+    "functionCall": "函数调用",
+    "reasoning": "高级推理"
   }
 }

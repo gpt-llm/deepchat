@@ -24,20 +24,12 @@
       />
     </div>
     <div v-for="(model, idx) in addModelList" :key="idx" class="flex flex-row gap-2 items-center">
-      <Input v-model="model.modelName" :placeholder="t('model.add.namePlaceholder')" />
-      <Input v-model="model.modelId" :placeholder="t('model.add.idPlaceholder')" />
       <Input
-        v-model="model.contextLength"
-        type="number"
-        :placeholder="t('model.add.contextLengthPlaceholder')"
-        class="w-32"
+        v-model="model.modelName"
+        :placeholder="t('model.add.namePlaceholder')"
+        class="flex-1"
       />
-      <Input
-        v-model="model.maxTokens"
-        type="number"
-        :placeholder="t('model.add.maxTokensPlaceholder')"
-        class="w-32"
-      />
+      <Input v-model="model.modelId" :placeholder="t('model.add.idPlaceholder')" class="flex-1" />
       <Select v-model="model.type" class="w-16">
         <SelectTrigger class="w-full">
           <div class="flex items-center gap-1">
@@ -143,8 +135,6 @@ const { t } = useI18n()
 interface ModelEdit {
   modelName: string
   modelId: string
-  contextLength: number
-  maxTokens: number
   type: ModelType
 }
 
@@ -211,8 +201,6 @@ const addEdit = () => {
   addModelList.value.push({
     modelName: '',
     modelId: '',
-    contextLength: 4096,
-    maxTokens: 2048,
     type: ModelType.Chat
   })
 }
@@ -233,8 +221,8 @@ const confirmAdd = async (idx: number) => {
       id: model.modelId,
       name: model.modelName,
       enabled: true,
-      contextLength: model.contextLength || 4096,
-      maxTokens: model.maxTokens || 2048,
+      contextLength: 4096,
+      maxTokens: 2048,
       vision: false,
       functionCall: false,
       reasoning: false,

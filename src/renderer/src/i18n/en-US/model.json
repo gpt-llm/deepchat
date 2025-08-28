@@ -26,5 +26,23 @@
     "code": "Code",
     "writing": "Writing",
     "analysis": "Analysis"
+  },
+  "selection": {
+    "title": "Select Models",
+    "searchPlaceholder": "Search models by name or ID...",
+    "filterByType": "Filter by type",
+    "filterByProvider": "Filter by provider",
+    "allTypes": "All Types",
+    "allProviders": "All Providers",
+    "selectAll": "Select All",
+    "selectNone": "Select None",
+    "noModelsFound": "No models found matching your criteria",
+    "selectedCount": "{count} models selected",
+    "clear": "Clear Selection"
+  },
+  "capabilities": {
+    "vision": "Vision Support",
+    "functionCall": "Function Calling",
+    "reasoning": "Advanced Reasoning"
   }
 }

@@ -141,6 +141,18 @@ export const DIALOG_EVENTS = {
   RESPONSE: 'dialog:response' // 渲染进程 -> 主进程，dialog结果回传
 }
 
+// 模型选择对话框事件
+export const MODEL_SELECTOR_EVENTS = {
+  SHOW_REQUEST: 'model-selector:show-request', // 主进程 -> 渲染进程，请求显示模型选择器
+  HIDE_REQUEST: 'model-selector:hide-request', // 主进程 -> 渲染进程，请求隐藏模型选择器
+  SELECTION_CHANGED: 'model-selector:selection-changed', // 渲染进程 -> 主进程，模型选择变更
+  CONFIRMED: 'model-selector:confirmed', // 渲染进程 -> 主进程，确认选择
+  CANCELLED: 'model-selector:cancelled', // 渲染进程 -> 主进程，取消选择
+  PROVIDER_FILTER_CHANGED: 'model-selector:provider-filter-changed', // 渲染进程 -> 主进程，提供者筛选变更
+  SEARCH_QUERY_CHANGED: 'model-selector:search-query-changed', // 渲染进程 -> 主进程，搜索查询变更
+  FAVORITE_TOGGLED: 'model-selector:favorite-toggled' // 渲染进程 -> 主进程，收藏状态切换
+}
+
 // 知识库事件
 export const RAG_EVENTS = {
   FILE_UPDATED: 'rag:file-updated' // 文件状态更新

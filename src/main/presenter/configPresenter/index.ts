@@ -24,6 +24,11 @@ import { compare } from 'compare-versions'
 import { defaultShortcutKey, ShortcutKeySetting } from './shortcutKeySettings'
 import { ModelConfigHelper } from './modelConfig'
 import { KnowledgeConfHelper } from './knowledgeConfHelper'
+import {
+  ModelDetectionService,
+  ModelDetectionResult,
+  ModelDetectionState
+} from './modelDetectionService'
 
 // 定义应用设置的接口
 interface IAppSettings {
@@ -85,6 +90,10 @@ export class ConfigPresenter implements IConfigPresenter {
   private knowledgeConfHelper: KnowledgeConfHelper // 知识配置助手
   // Model status memory cache for high-frequency read/write operations
   private modelStatusCache: Map<string, boolean> = new Map()
+  // Provider refresh timestamps to avoid showing dialogs during auto-refresh
+  private providerRefreshTimestamps: Map<string, number> = new Map()
+  // Last dialog shown time to avoid frequent popups
+  private lastModelDetectionDialogTime = 0
 
   constructor() {
     this.userDataPath = app.getPath('userData')
@@ -1204,6 +1213,91 @@ export class ConfigPresenter implements IConfigPresenter {
   // 根据包名查找服务器
   async findMcpServerByPackage(packageName: string): Promise<string | null> {
     return this.mcpConfHelper.findServerByPackage(packageName)
+  }
+
+  // ===================== 模型检测相关方法 =====================
+
+  /**
+   * 记录 provider 刷新时间戳
+   * 用于判断是否是自动刷新导致的临时状态
+   */
+  recordProviderRefreshTimestamp(providerId: string): void {
+    this.providerRefreshTimestamps.set(providerId, Date.now())
+  }
+
+  /**
+   * 检测指定 provider 是否有启用的模型
+   */
+  async detectProviderEnabledModels(providerId: string): Promise<{
+    hasEnabledModels: boolean
+    totalModels: number
+    enabledModels: number
+    isFirstTimeSetup: boolean
+  }> {
+    return ModelDetectionService.detectProviderEnabledModels(
+      providerId,
+      this.getProviders(),
+      (id) => this.getProviderModels(id),
+      (id) => this.getCustomModels(id),
+      (pId, mId) => this.getModelStatus(pId, mId)
+    )
+  }
+
+  /**
+   * 全面检测用户的模型启用状态
+   */
+  async detectOverallModelState(): Promise<ModelDetectionResult> {
+    // 转换 Map 为普通对象
+    const refreshTimestamps: Record<string, number> = {}
+    for (const [key, value] of this.providerRefreshTimestamps.entries()) {
+      refreshTimestamps[key] = value
+    }
+
+    return ModelDetectionService.detectOverallModelState(
+      this.getProviders(),
+      (id) => this.getProviderModels(id),
+      (id) => this.getCustomModels(id),
+      (pId, mId) => this.getModelStatus(pId, mId),
+      refreshTimestamps
+    )
+  }
+
+  /**
+   * 检查是否应该显示模型检测对话框
+   */
+  async shouldShowModelDetectionDialog(): Promise<boolean> {
+    const detectionResult = await this.detectOverallModelState()
+
+    return !ModelDetectionService.shouldSkipDialog(
+      detectionResult,
+      this.lastModelDetectionDialogTime,
+      30000 // 30秒间隔
+    )
+  }
+
+  /**
+   * 更新最后显示对话框的时间
+   */
+  updateLastModelDetectionDialogTime(): void {
+    this.lastModelDetectionDialogTime = Date.now()
+  }
+
+  /**
+   * 格式化模型检测结果为用户友好的消息
+   */
+  formatModelDetectionMessage(detectionResult: ModelDetectionResult): {
+    title: string
+    message: string
+    actions: string[]
+  } {
+    return ModelDetectionService.formatDetectionMessage(detectionResult)
+  }
+
+  /**
+   * 获取模型检测状态枚举（用于前端判断）
+   */
+  getModelDetectionStates() {
+    return ModelDetectionState
   }
 }
 

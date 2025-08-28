@@ -463,6 +463,23 @@ export interface IConfigPresenter {
   getAutoDetectNpmRegistry?(): boolean
   setAutoDetectNpmRegistry?(enabled: boolean): void
   clearNpmRegistryCache?(): void
+  // 模型检测相关方法
+  recordProviderRefreshTimestamp(providerId: string): void
+  detectProviderEnabledModels(providerId: string): Promise<{
+    hasEnabledModels: boolean
+    totalModels: number
+    enabledModels: number
+    isFirstTimeSetup: boolean
+  }>
+  detectOverallModelState(): Promise<any>
+  shouldShowModelDetectionDialog(): Promise<boolean>
+  updateLastModelDetectionDialogTime(): void
+  formatModelDetectionMessage(detectionResult: any): {
+    title: string
+    message: string
+    actions: string[]
+  }
+  getModelDetectionStates(): any
 }
 export type RENDERER_MODEL_META = {
   id: string
@@ -1400,6 +1417,91 @@ export interface DialogResponse {
   button: string
 }
 
+// Model Selector Dialog Types
+export interface ModelInfo {
+  id: string
+  name: string
+  providerId: string
+  providerName: string
+  modelType: ModelType
+  description?: string
+  contextWindow?: number
+  pricing?: {
+    input?: number
+    output?: number
+    currency?: string
+  }
+  capabilities?: {
+    vision?: boolean
+    functionCalling?: boolean
+    streaming?: boolean
+  }
+  isFavorite?: boolean
+  isOnline?: boolean
+  tags?: string[]
+}
+
+export interface ProviderInfo {
+  id: string
+  name: string
+  icon?: string
+  isEnabled: boolean
+  modelCount: number
+  type: 'cloud' | 'local' | 'custom'
+}
+
+export interface ModelSelectorShowRequest {
+  id: string
+  title?: string
+  description?: string
+  currentModelId?: string
+  enabledProviders?: string[]
+  showFavoriteFilter?: boolean
+  showProviderFilter?: boolean
+  showSearch?: boolean
+  maxSelections?: number // For future multi-select support
+  tabId?: number // Optional tab context
+  windowId?: number // Optional window context
+}
+
+export interface ModelSelectorSelectionChanged {
+  id: string
+  selectedModelId: string
+  modelInfo: ModelInfo
+  tabId?: number
+}
+
+export interface ModelSelectorConfirmed {
+  id: string
+  selectedModelId: string
+  modelInfo: ModelInfo
+  tabId?: number
+}
+
+export interface ModelSelectorCancelled {
+  id: string
+  tabId?: number
+}
+
+export interface ModelSelectorProviderFilterChanged {
+  id: string
+  selectedProviderIds: string[]
+  tabId?: number
+}
+
+export interface ModelSelectorSearchQueryChanged {
+  id: string
+  searchQuery: string
+  tabId?: number
+}
+
+export interface ModelSelectorFavoriteToggled {
+  id: string
+  modelId: string
+  isFavorite: boolean
+  tabId?: number
+}
+
 export interface IDialogPresenter {
   /**
    * Show dialog
@@ -1418,6 +1520,69 @@ export interface IDialogPresenter {
    * @param response Dialog id
    */
   handleDialogError(response: string): Promise<void>
+}
+
+export interface IModelSelectorPresenter {
+  /**
+   * Show model selector dialog
+   * @param request ModelSelectorShowRequest object containing the configuration
+   * @returns Promise that resolves to selected model info or null if cancelled
+   */
+  showModelSelector(request: Omit<ModelSelectorShowRequest, 'id'>): Promise<ModelInfo | null>
+
+  /**
+   * Hide model selector dialog
+   */
+  hideModelSelector(): Promise<void>
+
+  /**
+   * Handle model selection changed
+   * @param event Selection changed event
+   */
+  handleSelectionChanged(event: ModelSelectorSelectionChanged): Promise<void>
+
+  /**
+   * Handle model selection confirmed
+   * @param event Confirmed event
+   */
+  handleConfirmed(event: ModelSelectorConfirmed): Promise<void>
+
+  /**
+   * Handle model selection cancelled
+   * @param event Cancelled event
+   */
+  handleCancelled(event: ModelSelectorCancelled): Promise<void>
+
+  /**
+   * Handle provider filter changed
+   * @param event Provider filter changed event
+   */
+  handleProviderFilterChanged(event: ModelSelectorProviderFilterChanged): Promise<void>
+
+  /**
+   * Handle search query changed
+   * @param event Search query changed event
+   */
+  handleSearchQueryChanged(event: ModelSelectorSearchQueryChanged): Promise<void>
+
+  /**
+   * Handle favorite toggled
+   * @param event Favorite toggled event
+   */
+  handleFavoriteToggled(event: ModelSelectorFavoriteToggled): Promise<void>
+
+  /**
+   * Get available models
+   * @param providerId Optional provider filter
+   * @returns List of available models
+   */
+  getAvailableModels(providerId?: string): Promise<ModelInfo[]>
+
+  /**
+   * Get available providers
+   * @returns List of available providers
+   */
+  getAvailableProviders(): Promise<ProviderInfo[]>
 }
 
 // built-in knowledgebase
