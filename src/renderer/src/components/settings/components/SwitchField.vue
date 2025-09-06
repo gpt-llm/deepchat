@@ -8,7 +8,7 @@
         {{ description }}
       </p>
     </div>
-    
+
     <Switch
       :id="fieldId"
       :checked="modelValue"
@@ -17,7 +17,7 @@
       :aria-describedby="description ? `${fieldId}-desc` : undefined"
       class="ml-4"
     />
-    
+
     <div v-if="description" :id="`${fieldId}-desc`" class="sr-only">
       {{ description }}
     </div>
@@ -43,8 +43,9 @@ defineEmits<{
 }>()
 
 // Generate unique ID for accessibility
-const fieldId = computed(() => 
-  `switch-${props.label.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9)}`
+const fieldId = computed(
+  () =>
+    `switch-${props.label.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9)}`
 )
 </script>
 

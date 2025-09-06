@@ -89,20 +89,23 @@ describe('ChatInput Accessibility', () => {
       }
     }))
 
-    wrapper = await testComponentAccessibility(ChatInput, {
-      id: testId,
-      disabled: false
-    }, {
-      global: {
-        stubs: {
-          TransitionGroup: {
-            name: 'TransitionGroup',
-            template: '<div><slot /></div>'
-          },
-          FileItem: {
-            name: 'FileItem',
-            props: ['fileName', 'deletable', 'mimeType', 'tokens', 'thumbnail', 'context'],
-            template: `<div 
+    wrapper = await testComponentAccessibility(
+      ChatInput,
+      {
+        id: testId,
+        disabled: false
+      },
+      {
+        global: {
+          stubs: {
+            TransitionGroup: {
+              name: 'TransitionGroup',
+              template: '<div><slot /></div>'
+            },
+            FileItem: {
+              name: 'FileItem',
+              props: ['fileName', 'deletable', 'mimeType', 'tokens', 'thumbnail', 'context'],
+              template: `<div 
               role="listitem"
               :aria-label="fileName"
               tabindex="0"
@@ -114,16 +117,17 @@ describe('ChatInput Accessibility', () => {
               <span>{{ fileName }}</span>
               <button v-if="deletable" @click="$emit('delete')" :aria-label="$t('common.delete')">×</button>
             </div>`,
-            emits: ['click', 'delete']
-          },
-          Icon: {
-            name: 'Icon',
-            props: ['icon'],
-            template: '<span :class="icon" aria-hidden="true"></span>'
+              emits: ['click', 'delete']
+            },
+            Icon: {
+              name: 'Icon',
+              props: ['icon'],
+              template: '<span :class="icon" aria-hidden="true"></span>'
+            }
           }
         }
       }
-    })
+    )
   })
 
   afterEach(() => {
@@ -135,7 +139,7 @@ describe('ChatInput Accessibility', () => {
     it('should have proper ARIA structure', () => {
       // Test main container ARIA attributes
       testAriaAttributes(wrapper, {
-        'role': 'region',
+        role: 'region',
         'aria-label': expect.stringMatching(/file.*drop.*area/i)
       })
 
@@ -155,11 +159,11 @@ describe('ChatInput Accessibility', () => {
     it('should have proper input field accessibility', async () => {
       const editorContent = wrapper.find('[data-testid="chat-editor"]')
       expect(editorContent.exists()).toBe(true)
-      
+
       testAriaAttributes(editorContent, {
-        'role': 'textbox',
+        role: 'textbox',
         'aria-multiline': 'true',
-        'contenteditable': 'true'
+        contenteditable: 'true'
       })
     })
   })
@@ -168,13 +172,15 @@ describe('ChatInput Accessibility', () => {
     it('should support keyboard navigation for file operations', async () => {
       // Mock files being present
       await wrapper.setData({
-        selectedFiles: [{
-          metadata: { fileName: 'test.txt' },
-          mimeType: 'text/plain',
-          token: 100,
-          thumbnail: null,
-          path: '/test.txt'
-        }]
+        selectedFiles: [
+          {
+            metadata: { fileName: 'test.txt' },
+            mimeType: 'text/plain',
+            token: 100,
+            thumbnail: null,
+            path: '/test.txt'
+          }
+        ]
       })
 
       await waitForA11yUpdates(wrapper)
@@ -205,7 +211,7 @@ describe('ChatInput Accessibility', () => {
 
     it('should support keyboard shortcuts for input operations', async () => {
       const editorContent = wrapper.find('[data-testid="chat-editor"]')
-      
+
       await testKeyboardNavigation(wrapper, [
         {
           key: 'Tab',
@@ -214,24 +220,24 @@ describe('ChatInput Accessibility', () => {
       ])
 
       // Test Ctrl+Enter for send (if implemented)
-      await editorContent.trigger('keydown', { 
-        key: 'Enter', 
-        ctrlKey: true 
+      await editorContent.trigger('keydown', {
+        key: 'Enter',
+        ctrlKey: true
       })
-      
+
       await waitForA11yUpdates(wrapper)
-      
+
       // Verify send event is emitted
       expect(wrapper.emitted('send')).toBeTruthy()
     })
 
     it('should handle file upload keyboard interactions', async () => {
       const uploadButton = wrapper.find('button[aria-label*="upload"], button[aria-label*="file"]')
-      
+
       if (uploadButton.exists()) {
         await uploadButton.trigger('keydown', { key: 'Enter' })
         await waitForA11yUpdates(wrapper)
-        
+
         // Should trigger file selection
         expect(uploadButton.emitted('click')).toBeTruthy()
       }
@@ -245,13 +251,15 @@ describe('ChatInput Accessibility', () => {
           action: async () => {
             // Simulate adding a file
             await wrapper.setData({
-              selectedFiles: [{
-                metadata: { fileName: 'test.txt' },
-                mimeType: 'text/plain',
-                token: 100,
-                thumbnail: null,
-                path: '/test.txt'
-              }]
+              selectedFiles: [
+                {
+                  metadata: { fileName: 'test.txt' },
+                  mimeType: 'text/plain',
+                  token: 100,
+                  thumbnail: null,
+                  path: '/test.txt'
+                }
+              ]
             })
           },
           expectedFocusSelector: '[role="listitem"]',
@@ -274,7 +282,7 @@ describe('ChatInput Accessibility', () => {
 
     it('should return focus to editor after file operations', async () => {
       const editor = wrapper.find('[data-testid="chat-editor"]')
-      
+
       // Focus should be manageable
       await editor.trigger('focus')
       expect(document.activeElement).toBe(editor.element)
@@ -293,7 +301,7 @@ describe('ChatInput Accessibility', () => {
       const fileInput = document.createElement('input')
       fileInput.type = 'file'
       const file = new File(['test content'], 'test.txt', { type: 'text/plain' })
-      
+
       Object.defineProperty(fileInput, 'files', {
         value: [file],
         writable: false
@@ -310,19 +318,19 @@ describe('ChatInput Accessibility', () => {
       // Should have announced file upload
       // In a real implementation, this would check the live region content
       expect(liveRegion.textContent).toContain('test.txt')
-      
+
       document.body.removeChild(liveRegion)
     })
 
     it('should provide appropriate labels for interactive elements', () => {
       const buttons = wrapper.findAll('button')
-      
-      buttons.forEach(button => {
+
+      buttons.forEach((button) => {
         // Each button should have either visible text or aria-label
         const hasVisibleText = button.text().trim().length > 0
         const hasAriaLabel = button.attributes('aria-label')
         const hasAriaLabelledby = button.attributes('aria-labelledby')
-        
+
         expect(
           hasVisibleText || hasAriaLabel || hasAriaLabelledby,
           `Button should have accessible name: ${button.html()}`
@@ -349,7 +357,7 @@ describe('ChatInput Accessibility', () => {
 
     it('should provide error context for screen readers', async () => {
       const editor = wrapper.find('[data-testid="chat-editor"]')
-      
+
       // Mock error state
       await wrapper.setData({
         hasError: true,
@@ -376,7 +384,7 @@ describe('ChatInput Accessibility', () => {
 
     it('should announce drag and drop state changes', async () => {
       const dropArea = wrapper.find('[role="region"]')
-      
+
       // Simulate drag enter
       await dropArea.trigger('dragenter', {
         dataTransfer: {
@@ -396,7 +404,7 @@ describe('ChatInput Accessibility', () => {
       // If the input contains content in different languages,
       // it should be properly marked up
       const editor = wrapper.find('[data-testid="chat-editor"]')
-      
+
       // Mock mixed language content
       await editor.setValue('Hello 世界')
       await waitForA11yUpdates(wrapper)
@@ -412,27 +420,27 @@ describe('ChatInput Accessibility', () => {
     it('should work with screen reader testing', () => {
       // Find all elements that should be accessible to screen readers
       const focusableElements = findFocusableElements(wrapper.element as HTMLElement)
-      
+
       // All focusable elements should have appropriate labels
-      focusableElements.forEach(element => {
-        const hasAccessibleName = 
+      focusableElements.forEach((element) => {
+        const hasAccessibleName =
           element.getAttribute('aria-label') ||
           element.getAttribute('aria-labelledby') ||
           element.textContent?.trim() ||
           element.getAttribute('title')
-        
+
         expect(hasAccessibleName).toBeTruthy()
       })
     })
 
     it('should maintain proper tab order', () => {
       const focusableElements = findFocusableElements(wrapper.element as HTMLElement)
-      
+
       // Check that tab indices are in logical order
       const tabIndices = focusableElements
-        .map(el => parseInt(el.getAttribute('tabindex') || '0'))
-        .filter(index => index >= 0)
-      
+        .map((el) => parseInt(el.getAttribute('tabindex') || '0'))
+        .filter((index) => index >= 0)
+
       // Should be in ascending order (0 comes first in natural order)
       const sortedIndices = [...tabIndices].sort((a, b) => a - b)
       expect(tabIndices).toEqual(sortedIndices)

@@ -35,7 +35,7 @@
   },
   "content": {
     "codeBlockStart": "Code block start",
-    "codeBlockEnd": "Code block end", 
+    "codeBlockEnd": "Code block end",
     "codeLanguage": "Code language: {language}",
     "codeLineNumber": "Line {number}",
     "linkDescription": "Link: {text}",
@@ -53,7 +53,7 @@
   },
   "status": {
     "online": "Application is online",
-    "offline": "Application is offline", 
+    "offline": "Application is offline",
     "connecting": "Connecting...",
     "connected": "Connected",
     "disconnected": "Disconnected",
@@ -68,7 +68,7 @@
   },
   "actions": {
     "retryAction": "Retrying operation...",
-    "cancelAction": "Operation canceled", 
+    "cancelAction": "Operation canceled",
     "deleteAction": "Item deleted",
     "copyAction": "Content copied",
     "pasteAction": "Content pasted",

@@ -13,7 +13,7 @@ import type { VueWrapper } from '@vue/test-utils'
  */
 export function createTestApp(): App {
   const app = createApp({})
-  
+
   // Add Pinia for state management
   const pinia = createPinia()
   app.use(pinia)
@@ -96,14 +96,14 @@ export function mockElectronAPIs() {
     invoke: vi.fn(),
     on: vi.fn(),
     removeAllListeners: vi.fn(),
-    
+
     // Window management
     windowControls: {
       minimize: vi.fn(),
       maximize: vi.fn(),
       close: vi.fn()
     },
-    
+
     // System integration
     system: {
       getSystemPreferences: vi.fn().mockResolvedValue({
@@ -118,7 +118,11 @@ export function mockElectronAPIs() {
 /**
  * Create a mock event for keyboard testing
  */
-export function createKeyboardEvent(type: string, key: string, options: KeyboardEventInit = {}): KeyboardEvent {
+export function createKeyboardEvent(
+  type: string,
+  key: string,
+  options: KeyboardEventInit = {}
+): KeyboardEvent {
   return new KeyboardEvent(type, {
     key,
     code: `Key${key.toUpperCase()}`,
@@ -146,25 +150,25 @@ export async function waitForA11yUpdates(wrapper?: VueWrapper, timeout = 100): P
   if (wrapper) {
     await wrapper.vm.$nextTick()
   }
-  
+
   // Wait for any animations or transitions
-  await new Promise(resolve => setTimeout(resolve, timeout))
-  
+  await new Promise((resolve) => setTimeout(resolve, timeout))
+
   // Wait for any microtasks
-  await new Promise(resolve => process.nextTick(resolve))
+  await new Promise((resolve) => process.nextTick(resolve))
 }
 
 /**
  * Simulate user interaction with proper timing
  */
 export async function simulateUserInteraction(
-  element: HTMLElement, 
+  element: HTMLElement,
   action: 'click' | 'focus' | 'blur' | 'keydown' | 'keyup',
   options: any = {}
 ): Promise<void> {
   // Simulate realistic timing
-  await new Promise(resolve => setTimeout(resolve, 10))
-  
+  await new Promise((resolve) => setTimeout(resolve, 10))
+
   let event: Event
   switch (action) {
     case 'click':
@@ -185,11 +189,11 @@ export async function simulateUserInteraction(
     default:
       throw new Error(`Unsupported action: ${action}`)
   }
-  
+
   element.dispatchEvent(event)
-  
+
   // Wait for event processing
-  await new Promise(resolve => setTimeout(resolve, 10))
+  await new Promise((resolve) => setTimeout(resolve, 10))
 }
 
 /**
@@ -197,27 +201,26 @@ export async function simulateUserInteraction(
  */
 export function isVisibleToScreenReaders(element: HTMLElement): boolean {
   const style = window.getComputedStyle(element)
-  
+
   // Check if element is hidden from screen readers
   if (element.getAttribute('aria-hidden') === 'true') {
     return false
   }
-  
+
   // Check if element is visually hidden but available to screen readers
-  if (style.position === 'absolute' && 
-      style.left === '-10000px' || 
-      style.clipPath === 'inset(50%)' ||
-      style.clip === 'rect(0, 0, 0, 0)') {
+  if (
+    (style.position === 'absolute' && style.left === '-10000px') ||
+    style.clipPath === 'inset(50%)' ||
+    style.clip === 'rect(0, 0, 0, 0)'
+  ) {
     return true
   }
-  
+
   // Check if element is completely hidden
-  if (style.display === 'none' || 
-      style.visibility === 'hidden' || 
-      style.opacity === '0') {
+  if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
     return false
   }
-  
+
   return true
 }
 
@@ -238,9 +241,9 @@ export function findFocusableElements(container: HTMLElement): HTMLElement[] {
     '[contenteditable]',
     '[tabindex]:not([tabindex="-1"])'
   ]
-  
+
   const elements = container.querySelectorAll(focusableSelectors.join(', '))
-  return Array.from(elements).filter(element => {
+  return Array.from(elements).filter((element) => {
     const htmlElement = element as HTMLElement
     return isVisibleToScreenReaders(htmlElement) && htmlElement.tabIndex !== -1
   }) as HTMLElement[]
@@ -250,11 +253,15 @@ export function findFocusableElements(container: HTMLElement): HTMLElement[] {
  * Test aria-live announcements
  */
 export function createAriaLiveTestHelper() {
-  const announcements: Array<{ message: string, priority: 'polite' | 'assertive', timestamp: number }> = []
-  
+  const announcements: Array<{
+    message: string
+    priority: 'polite' | 'assertive'
+    timestamp: number
+  }> = []
+
   // Mock MutationObserver to track aria-live changes
   const originalMutationObserver = window.MutationObserver
-  
+
   window.MutationObserver = vi.fn().mockImplementation((callback) => ({
     observe: vi.fn((target: Element) => {
       // Watch for text content changes in aria-live regions
@@ -270,7 +277,7 @@ export function createAriaLiveTestHelper() {
     disconnect: vi.fn(),
     takeRecords: vi.fn()
   }))
-  
+
   return {
     getAnnouncements: () => [...announcements],
     clearAnnouncements: () => announcements.splice(0, announcements.length),
@@ -287,7 +294,7 @@ export function setupA11yTestEnvironment() {
   // Mock media queries for accessibility preferences
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -295,10 +302,10 @@ export function setupA11yTestEnvironment() {
       removeListener: vi.fn(),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
+      dispatchEvent: vi.fn()
+    }))
   })
-  
+
   // Mock IntersectionObserver for visibility testing
   global.IntersectionObserver = vi.fn().mockImplementation((callback) => ({
     observe: vi.fn(),
@@ -306,20 +313,20 @@ export function setupA11yTestEnvironment() {
     disconnect: vi.fn(),
     takeRecords: vi.fn()
   }))
-  
+
   // Mock ResizeObserver for responsive testing
   global.ResizeObserver = vi.fn().mockImplementation((callback) => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
     disconnect: vi.fn()
   }))
-  
+
   // Setup JSDOM with accessibility features
   Object.defineProperty(document, 'activeElement', {
     writable: true,
     value: document.body
   })
-  
+
   return {
     cleanup: () => {
       // Reset any mocks if needed
@@ -346,10 +353,10 @@ export function assertAriaRelationship(
 ): void {
   const attribute = `aria-${relationshipType}`
   const value = element.getAttribute(attribute)
-  
+
   expect(value).toBeTruthy()
   expect(value?.split(' ')).toContain(relatedElementId)
-  
+
   // Verify the related element exists
   const relatedElement = document.getElementById(relatedElementId)
   expect(relatedElement).toBeTruthy()
@@ -368,7 +375,7 @@ export function assertMinimumContrastRatio(element: HTMLElement, minRatio = 4.5)
   const styles = window.getComputedStyle(element)
   const color = styles.color
   const backgroundColor = styles.backgroundColor
-  
+
   const ratio = calculateContrastRatio(color, backgroundColor)
   expect(ratio).toBeGreaterThanOrEqual(minRatio)
 }

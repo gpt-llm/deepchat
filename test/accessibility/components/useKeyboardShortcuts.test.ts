@@ -60,21 +60,21 @@ const ShortcutTestComponent = defineComponent({
       showHelp: 'Ctrl+?',
       focusInput: 'Ctrl+K'
     })
-    
+
     const showShortcutHelp = ref(false)
     const currentView = ref('chat')
-    
+
     const navigateToChat = () => {
       currentView.value = 'chat'
     }
-    
+
     const navigateToSettings = () => {
       currentView.value = 'settings'
     }
-    
+
     const handleInputKeydown = (event: KeyboardEvent) => {
       const key = `${event.ctrlKey ? 'Ctrl+' : ''}${event.altKey ? 'Alt+' : ''}${event.shiftKey ? 'Shift+' : ''}${event.key}`
-      
+
       if (key === shortcuts.value.sendMessage) {
         event.preventDefault()
         // Emit send message event
@@ -83,11 +83,11 @@ const ShortcutTestComponent = defineComponent({
         showShortcutHelp.value = !showShortcutHelp.value
       }
     }
-    
+
     // Global shortcut listener
     const handleGlobalKeydown = (event: KeyboardEvent) => {
       const key = `${event.ctrlKey ? 'Ctrl+' : ''}${event.altKey ? 'Alt+' : ''}${event.shiftKey ? 'Shift+' : ''}${event.key}`
-      
+
       if (key === shortcuts.value.navigateToChat) {
         event.preventDefault()
         navigateToChat()
@@ -103,10 +103,10 @@ const ShortcutTestComponent = defineComponent({
         showShortcutHelp.value = !showShortcutHelp.value
       }
     }
-    
+
     // Add global listener (would be done in composable)
     document.addEventListener('keydown', handleGlobalKeydown)
-    
+
     return {
       shortcuts,
       showShortcutHelp,
@@ -188,7 +188,7 @@ describe('Keyboard Shortcuts Accessibility', () => {
 
     it('should focus input with Ctrl+K shortcut', async () => {
       const input = wrapper.find('[data-testid="message-input"]')
-      
+
       // Focus should not be on input initially
       expect(document.activeElement).not.toBe(input.element)
 
@@ -225,10 +225,12 @@ describe('Keyboard Shortcuts Accessibility', () => {
       await input.trigger('keydown', { key: 'Enter', ctrlKey: true })
       await waitForA11yUpdates(wrapper)
 
-      expect(keydownSpy).toHaveBeenCalledWith(expect.objectContaining({
-        key: 'Enter',
-        ctrlKey: true
-      }))
+      expect(keydownSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          key: 'Enter',
+          ctrlKey: true
+        })
+      )
     })
   })
 
@@ -308,9 +310,9 @@ describe('Keyboard Shortcuts Accessibility', () => {
     })
 
     it('should handle shortcut conflicts gracefully', async () => {
-      // If multiple components register the same shortcut, 
+      // If multiple components register the same shortcut,
       // the last one should win or they should be properly namespaced
-      
+
       // This test would depend on actual conflict resolution implementation
       expect(true).toBe(true) // Placeholder
     })
@@ -319,30 +321,30 @@ describe('Keyboard Shortcuts Accessibility', () => {
   describe('Dynamic Shortcut Updates', () => {
     it('should update shortcuts when configuration changes', async () => {
       const chatButton = wrapper.find('[data-testid="chat-button"]')
-      
+
       // Initial shortcut
       expect(chatButton.attributes('aria-label')).toContain('Alt+1')
-      
+
       // Update shortcuts
       wrapper.vm.shortcuts = {
         ...wrapper.vm.shortcuts,
         navigateToChat: 'Ctrl+1'
       }
       await waitForA11yUpdates(wrapper)
-      
+
       expect(chatButton.attributes('aria-label')).toContain('Ctrl+1')
     })
 
     it('should handle shortcut removal gracefully', async () => {
       const chatButton = wrapper.find('[data-testid="chat-button"]')
-      
+
       // Remove shortcut
       wrapper.vm.shortcuts = {
         ...wrapper.vm.shortcuts,
         navigateToChat: ''
       }
       await waitForA11yUpdates(wrapper)
-      
+
       // Should not show shortcut in label
       expect(chatButton.attributes('aria-label')).not.toContain('Shortcut:')
     })
@@ -398,9 +400,9 @@ describe('Keyboard Shortcuts Accessibility', () => {
 
       // Should organize shortcuts logically (navigation, actions, etc.)
       expect(shortcutItems.length).toBeGreaterThan(0)
-      
+
       // Each shortcut should have clear description
-      shortcutItems.forEach(item => {
+      shortcutItems.forEach((item) => {
         expect(item.text()).toMatch(/\w+:\s+\w+/)
       })
     })
@@ -410,10 +412,10 @@ describe('Keyboard Shortcuts Accessibility', () => {
     it('should adapt shortcuts for different platforms', () => {
       // On Mac, Ctrl might be Cmd
       // This would require platform detection and adaptation
-      
+
       const userAgent = navigator.userAgent
       const isMac = userAgent.includes('Mac')
-      
+
       if (isMac) {
         // Shortcuts should use Cmd instead of Ctrl where appropriate
         // This would be implementation-specific
@@ -427,7 +429,7 @@ describe('Keyboard Shortcuts Accessibility', () => {
     it('should respect platform accessibility conventions', () => {
       // Different platforms have different conventions
       // e.g., Alt+F4 vs Cmd+Q for quit
-      
+
       // This would be implemented based on platform detection
       expect(true).toBe(true) // Placeholder
     })
@@ -436,12 +438,12 @@ describe('Keyboard Shortcuts Accessibility', () => {
   describe('Performance and Memory Management', () => {
     it('should clean up event listeners on component unmount', async () => {
       const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
-      
+
       wrapper.unmount()
-      
+
       // Should clean up global keydown listeners
       expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function))
-      
+
       removeEventListenerSpy.mockRestore()
     })
 
@@ -450,9 +452,9 @@ describe('Keyboard Shortcuts Accessibility', () => {
       for (let i = 0; i < 10; i++) {
         document.dispatchEvent(createKeyboardEvent('keydown', '1', { altKey: true }))
       }
-      
+
       await waitForA11yUpdates(wrapper)
-      
+
       // Should handle rapid activations gracefully
       expect(wrapper.vm.currentView).toBe('chat')
     })
@@ -474,18 +476,18 @@ describe('Keyboard Shortcuts Accessibility', () => {
     it('should not interfere with screen reader navigation modes', async () => {
       // Screen readers have browse mode, forms mode, etc.
       // Our shortcuts should not interfere with these
-      
+
       // This would require testing with actual screen reader APIs
       // For now, we ensure we don't override common navigation keys
       const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
-      
-      arrowKeys.forEach(key => {
+
+      arrowKeys.forEach((key) => {
         const event = createKeyboardEvent('keydown', key)
         const preventDefaultSpy = vi.fn()
         event.preventDefault = preventDefaultSpy
-        
+
         document.dispatchEvent(event)
-        
+
         // Should not prevent default for arrow keys
         expect(preventDefaultSpy).not.toHaveBeenCalled()
       })

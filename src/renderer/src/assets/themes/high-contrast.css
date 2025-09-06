@@ -225,7 +225,7 @@
 
 /* Ensure sufficient contrast for disabled elements */
 .a11y-high-contrast :disabled,
-.a11y-high-contrast [aria-disabled="true"] {
+.a11y-high-contrast [aria-disabled='true'] {
   opacity: 0.7;
   border: 2px dashed hsl(var(--muted-foreground));
   color: hsl(var(--muted-foreground));

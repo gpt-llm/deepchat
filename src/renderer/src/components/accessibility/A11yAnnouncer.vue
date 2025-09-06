@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="a11y-announcer"
-    aria-live="off"
-  >
+  <div class="a11y-announcer" aria-live="off">
     <!-- 礼貌模式通知区域 - 等待用户空闲时播报 -->
     <div
       ref="politeAnnouncerRef"
@@ -96,9 +93,7 @@ const showDebugInfo = ref(props.showDebugInfo)
 const isDevelopment = ref(import.meta.env.DEV)
 
 // 计算属性
-const recentAnnouncements = computed(() => 
-  getAnnouncementHistory(props.maxHistoryDisplay)
-)
+const recentAnnouncements = computed(() => getAnnouncementHistory(props.maxHistoryDisplay))
 
 // 消息清理定时器
 let politeTimer: NodeJS.Timeout | null = null
@@ -224,9 +219,12 @@ onUnmounted(() => {
 })
 
 // 监听 props 变化
-watch(() => props.showDebugInfo, (newValue) => {
-  showDebugInfo.value = newValue
-})
+watch(
+  () => props.showDebugInfo,
+  (newValue) => {
+    showDebugInfo.value = newValue
+  }
+)
 
 // 暴露给父组件的方法（如果需要）
 defineExpose({
@@ -237,10 +235,10 @@ defineExpose({
     // 暂时清空再恢复，强制屏幕阅读器重新读取
     const politeMsg = currentPoliteMessage.value
     const assertiveMsg = currentAssertiveMessage.value
-    
+
     currentPoliteMessage.value = ''
     currentAssertiveMessage.value = ''
-    
+
     nextTick(() => {
       currentPoliteMessage.value = politeMsg
       currentAssertiveMessage.value = assertiveMsg

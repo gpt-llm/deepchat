@@ -1,24 +1,12 @@
 <template>
   <div class="skip-links" aria-label="跳转链接">
-    <a
-      href="#main-content"
-      class="skip-link"
-      @click.prevent="skipToElement('main-content')"
-    >
+    <a href="#main-content" class="skip-link" @click.prevent="skipToElement('main-content')">
       {{ $t('accessibility.skipToMainContent') }}
     </a>
-    <a
-      href="#navigation"
-      class="skip-link"
-      @click.prevent="skipToElement('navigation')"
-    >
+    <a href="#navigation" class="skip-link" @click.prevent="skipToElement('navigation')">
       {{ $t('accessibility.skipToNavigation') }}
     </a>
-    <a
-      href="#sidebar"
-      class="skip-link"
-      @click.prevent="skipToElement('sidebar')"
-    >
+    <a href="#sidebar" class="skip-link" @click.prevent="skipToElement('sidebar')">
       {{ $t('accessibility.skipToSidebar') }}
     </a>
     <a
@@ -49,16 +37,16 @@ withDefaults(defineProps<Props>(), {
  */
 const skipToElement = async (elementId: string) => {
   const targetElement = document.getElementById(elementId)
-  
+
   if (!targetElement) {
     console.warn(`Skip link target not found: ${elementId}`)
     return
   }
 
   // 滚动到元素位置
-  targetElement.scrollIntoView({ 
-    behavior: 'smooth', 
-    block: 'start' 
+  targetElement.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
   })
 
   await nextTick()
@@ -117,7 +105,7 @@ const skipToElement = async (elementId: string) => {
   width: 1px;
   height: 1px;
   overflow: hidden;
-  
+
   /* 样式设置 */
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
@@ -127,10 +115,10 @@ const skipToElement = async (elementId: string) => {
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
-  
+
   /* 过渡效果 */
   transition: all 0.2s ease-in-out;
-  
+
   /* 高对比度边框 */
   border: 2px solid transparent;
 }
@@ -142,12 +130,12 @@ const skipToElement = async (elementId: string) => {
   width: auto;
   height: auto;
   overflow: visible;
-  
+
   /* 焦点状态样式 */
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
   border-color: hsl(var(--ring));
-  
+
   /* 阴影效果 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -172,7 +160,7 @@ const skipToElement = async (elementId: string) => {
   .skip-link {
     border: 2px solid currentColor;
   }
-  
+
   .skip-link:focus {
     outline: 3px solid;
     background: CanvasText;
@@ -205,12 +193,13 @@ const skipToElement = async (elementId: string) => {
 }
 
 @keyframes skip-target-pulse {
-  0%, 100% { 
-    opacity: 0; 
+  0%,
+  100% {
+    opacity: 0;
     transform: scale(1);
   }
-  50% { 
-    opacity: 1; 
+  50% {
+    opacity: 1;
     transform: scale(1.02);
   }
 }

@@ -7,7 +7,7 @@ export interface AccessibilitySettings {
     detailedDescriptions: boolean
     reduceVerbosity: boolean
   }
-  
+
   // Keyboard navigation
   keyboard: {
     enhancedNavigation: boolean
@@ -20,7 +20,7 @@ export interface AccessibilitySettings {
       help: string
     }
   }
-  
+
   // Visual assistance
   visual: {
     highContrast: boolean
@@ -29,7 +29,7 @@ export interface AccessibilitySettings {
     focusIndicatorStyle: 'default' | 'thick' | 'high-contrast'
     contrastLevel: 'AA' | 'AAA'
   }
-  
+
   // Cognitive assistance
   cognitive: {
     simplifiedMode: boolean
@@ -37,7 +37,7 @@ export interface AccessibilitySettings {
     autoImageDescriptions: boolean
     stepByStepGuidance: boolean
   }
-  
+
   // Audio and voice
   audio: {
     voiceAnnouncements: boolean

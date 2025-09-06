@@ -87,7 +87,7 @@
     },
     "navigation": {
       "skipToMain": "跳转到主内容",
-      "skipToSidebar": "跳转到侧边栏", 
+      "skipToSidebar": "跳转到侧边栏",
       "skipToInput": "跳转到输入框",
       "focusMessageList": "聚焦到消息列表",
       "focusSidebar": "聚焦到侧边栏",
@@ -101,7 +101,7 @@
     },
     "status": {
       "connected": "已连接",
-      "disconnected": "连接断开", 
+      "disconnected": "连接断开",
       "connecting": "连接中",
       "error": "连接错误"
     }

@@ -13,7 +13,7 @@ export function useVisualAccessibility() {
   const fontScaling = useFontScaling()
   const colorContrast = useColorContrast()
   const reducedMotion = useReducedMotion()
-  
+
   // Combined visual accessibility state
   const visualState = computed(() => ({
     highContrast: accessibilityStore.isHighContrastEnabled,
@@ -22,15 +22,16 @@ export function useVisualAccessibility() {
     focusStyle: accessibilityStore.settings.visual.focusIndicatorStyle,
     contrastLevel: accessibilityStore.settings.visual.contrastLevel
   }))
-  
+
   // Check if visual enhancements are active
-  const hasVisualEnhancements = computed(() => 
-    visualState.value.highContrast ||
-    visualState.value.reducedMotion ||
-    visualState.value.fontSize !== 'normal' ||
-    visualState.value.focusStyle !== 'default'
+  const hasVisualEnhancements = computed(
+    () =>
+      visualState.value.highContrast ||
+      visualState.value.reducedMotion ||
+      visualState.value.fontSize !== 'normal' ||
+      visualState.value.focusStyle !== 'default'
   )
-  
+
   // Get accessibility summary for display
   const getAccessibilitySummary = () => ({
     visual: visualState.value,
@@ -38,44 +39,44 @@ export function useVisualAccessibility() {
     motion: reducedMotion.getMotionPreferenceInfo(),
     enhancements: hasVisualEnhancements.value
   })
-  
+
   // Quick accessibility improvements
   const applyQuickImprovements = async () => {
     const improvements = []
-    
+
     // Enable high contrast if system prefers it or if contrast issues detected
     if (window.matchMedia('(prefers-contrast: high)').matches) {
       await accessibilityStore.updateVisualSettings({ highContrast: true })
       improvements.push('High contrast enabled')
     }
-    
+
     // Enable reduced motion if system prefers it
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       await accessibilityStore.updateVisualSettings({ reducedMotion: true })
       improvements.push('Reduced motion enabled')
     }
-    
+
     // Suggest larger font size on smaller screens
     if (window.innerWidth < 768 && visualState.value.fontSize === 'small') {
       await fontScaling.setFontSize('normal')
       improvements.push('Font size adjusted for mobile')
     }
-    
+
     // Enable enhanced focus for keyboard users
     const hasKeyboard = await detectKeyboardUsage()
     if (hasKeyboard && visualState.value.focusStyle === 'default') {
       await accessibilityStore.updateVisualSettings({ focusIndicatorStyle: 'thick' })
       improvements.push('Enhanced focus indicators enabled')
     }
-    
+
     return improvements
   }
-  
+
   // Detect keyboard usage patterns
   const detectKeyboardUsage = (): Promise<boolean> => {
     return new Promise((resolve) => {
       let keyboardDetected = false
-      
+
       const handleKeydown = (event: KeyboardEvent) => {
         if (event.key === 'Tab' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
           keyboardDetected = true
@@ -83,7 +84,7 @@ export function useVisualAccessibility() {
           resolve(true)
         }
       }
-      
+
       const handleMousedown = () => {
         document.removeEventListener('mousedown', handleMousedown)
         document.removeEventListener('keydown', handleKeydown)
@@ -91,10 +92,10 @@ export function useVisualAccessibility() {
           resolve(false)
         }
       }
-      
+
       document.addEventListener('keydown', handleKeydown)
       document.addEventListener('mousedown', handleMousedown)
-      
+
       // Timeout after 5 seconds
       setTimeout(() => {
         document.removeEventListener('keydown', handleKeydown)
@@ -103,11 +104,11 @@ export function useVisualAccessibility() {
       }, 5000)
     })
   }
-  
+
   // Run accessibility audit on current page
   const auditPageAccessibility = () => {
     const issues = []
-    
+
     // Check color contrast issues
     const contrastIssues = colorContrast.scanPageContrast()
     if (contrastIssues.length > 0) {
@@ -118,18 +119,20 @@ export function useVisualAccessibility() {
         message: `${contrastIssues.length} elements have insufficient color contrast`
       })
     }
-    
+
     // Check for missing focus indicators
-    const interactiveElements = document.querySelectorAll('button, a, input, textarea, select, [tabindex]')
+    const interactiveElements = document.querySelectorAll(
+      'button, a, input, textarea, select, [tabindex]'
+    )
     let focusIssues = 0
-    
-    interactiveElements.forEach(element => {
+
+    interactiveElements.forEach((element) => {
       const styles = window.getComputedStyle(element as HTMLElement)
       if (!styles.outlineStyle || styles.outlineStyle === 'none') {
         focusIssues++
       }
     })
-    
+
     if (focusIssues > 0) {
       issues.push({
         type: 'focus',
@@ -138,9 +141,11 @@ export function useVisualAccessibility() {
         message: `${focusIssues} interactive elements may lack proper focus indicators`
       })
     }
-    
+
     // Check for motion sensitivity
-    const animatedElements = document.querySelectorAll('[style*="animation"], [style*="transition"], .animate')
+    const animatedElements = document.querySelectorAll(
+      '[style*="animation"], [style*="transition"], .animate'
+    )
     if (animatedElements.length > 0 && !reducedMotion.shouldReduceMotion) {
       issues.push({
         type: 'motion',
@@ -149,15 +154,15 @@ export function useVisualAccessibility() {
         message: `${animatedElements.length} animated elements found. Consider enabling reduced motion.`
       })
     }
-    
+
     return issues
   }
-  
+
   // Generate accessibility report
   const generateAccessibilityReport = () => {
     const audit = auditPageAccessibility()
     const summary = getAccessibilitySummary()
-    
+
     return {
       timestamp: new Date().toISOString(),
       summary,
@@ -166,12 +171,12 @@ export function useVisualAccessibility() {
       score: calculateAccessibilityScore(audit)
     }
   }
-  
+
   // Generate recommendations based on audit
   const generateRecommendations = (issues: any[]) => {
     const recommendations = []
-    
-    issues.forEach(issue => {
+
+    issues.forEach((issue) => {
       switch (issue.type) {
         case 'contrast':
           recommendations.push({
@@ -196,15 +201,15 @@ export function useVisualAccessibility() {
           break
       }
     })
-    
+
     return recommendations
   }
-  
+
   // Calculate accessibility score (0-100)
   const calculateAccessibilityScore = (issues: any[]) => {
     let score = 100
-    
-    issues.forEach(issue => {
+
+    issues.forEach((issue) => {
       switch (issue.severity) {
         case 'high':
           score -= Math.min(30, issue.count * 5)
@@ -217,31 +222,31 @@ export function useVisualAccessibility() {
           break
       }
     })
-    
+
     return Math.max(0, score)
   }
-  
+
   // Initialize visual accessibility features
   const initializeVisualAccessibility = async () => {
     // Apply quick improvements on first load
     const improvements = await applyQuickImprovements()
-    
+
     if (improvements.length > 0) {
       accessibilityStore.announceMessage(
         `Applied ${improvements.length} accessibility improvements: ${improvements.join(', ')}`,
         'polite'
       )
     }
-    
+
     // Run initial audit
     const report = generateAccessibilityReport()
-    
+
     // Log results for debugging
     console.log('Visual Accessibility Report:', report)
-    
+
     return report
   }
-  
+
   // Setup
   onMounted(() => {
     // Initialize with a slight delay to allow DOM to settle
@@ -249,23 +254,23 @@ export function useVisualAccessibility() {
       initializeVisualAccessibility()
     }, 1000)
   })
-  
+
   return {
     // State
     visualState,
     hasVisualEnhancements,
-    
+
     // Composable integration
     fontScaling,
     colorContrast,
     reducedMotion,
-    
+
     // Utility functions
     getAccessibilitySummary,
     applyQuickImprovements,
     auditPageAccessibility,
     generateAccessibilityReport,
-    
+
     // Initialization
     initializeVisualAccessibility
   }

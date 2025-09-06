@@ -22,7 +22,12 @@ const applyA11ySettings = (settings: AccessibilitySettings) => {
   }
 
   // Apply font size
-  root.classList.remove('a11y-font-small', 'a11y-font-normal', 'a11y-font-large', 'a11y-font-extra-large')
+  root.classList.remove(
+    'a11y-font-small',
+    'a11y-font-normal',
+    'a11y-font-large',
+    'a11y-font-extra-large'
+  )
   root.classList.add(`a11y-font-${settings.visual.fontSize}`)
 
   // Apply focus indicator style
@@ -68,38 +73,24 @@ const applyA11ySettings = (settings: AccessibilitySettings) => {
 
 export const useAccessibilityStore = defineStore('accessibility', () => {
   const configP = usePresenter('configPresenter')
-  
+
   // Settings state
   const settings = ref<AccessibilitySettings>({ ...DEFAULT_ACCESSIBILITY_SETTINGS })
 
   // Computed properties for easy access to common settings
-  const isScreenReaderOptimized = computed(() => 
-    settings.value.screenReader.enabled
-  )
-  
-  const isKeyboardNavigationEnabled = computed(() => 
-    settings.value.keyboard.enhancedNavigation
-  )
-  
-  const isHighContrastEnabled = computed(() => 
-    settings.value.visual.highContrast
-  )
-  
-  const isReducedMotionEnabled = computed(() => 
-    settings.value.visual.reducedMotion
-  )
+  const isScreenReaderOptimized = computed(() => settings.value.screenReader.enabled)
 
-  const isSimplifiedModeEnabled = computed(() => 
-    settings.value.cognitive.simplifiedMode
-  )
+  const isKeyboardNavigationEnabled = computed(() => settings.value.keyboard.enhancedNavigation)
 
-  const currentFontSize = computed(() => 
-    settings.value.visual.fontSize
-  )
+  const isHighContrastEnabled = computed(() => settings.value.visual.highContrast)
 
-  const currentVoiceSpeed = computed(() => 
-    settings.value.audio.voiceSpeed
-  )
+  const isReducedMotionEnabled = computed(() => settings.value.visual.reducedMotion)
+
+  const isSimplifiedModeEnabled = computed(() => settings.value.cognitive.simplifiedMode)
+
+  const currentFontSize = computed(() => settings.value.visual.fontSize)
+
+  const currentVoiceSpeed = computed(() => settings.value.audio.voiceSpeed)
 
   // Methods
   const updateSettings = async (newSettings: Partial<AccessibilitySettings>) => {
@@ -110,7 +101,10 @@ export const useAccessibilityStore = defineStore('accessibility', () => {
     if (newSettings.keyboard) {
       settings.value.keyboard = { ...settings.value.keyboard, ...newSettings.keyboard }
       if (newSettings.keyboard.shortcuts) {
-        settings.value.keyboard.shortcuts = { ...settings.value.keyboard.shortcuts, ...newSettings.keyboard.shortcuts }
+        settings.value.keyboard.shortcuts = {
+          ...settings.value.keyboard.shortcuts,
+          ...newSettings.keyboard.shortcuts
+        }
       }
     }
     if (newSettings.visual) {
@@ -130,7 +124,9 @@ export const useAccessibilityStore = defineStore('accessibility', () => {
     await configP.setSetting('accessibilitySettings', settings.value)
   }
 
-  const updateScreenReaderSettings = async (updates: Partial<AccessibilitySettings['screenReader']>) => {
+  const updateScreenReaderSettings = async (
+    updates: Partial<AccessibilitySettings['screenReader']>
+  ) => {
     await updateSettings({ screenReader: updates })
   }
 
@@ -162,7 +158,10 @@ export const useAccessibilityStore = defineStore('accessibility', () => {
       if (savedSettings) {
         // Deep merge with defaults to ensure all properties exist
         settings.value = {
-          screenReader: { ...DEFAULT_ACCESSIBILITY_SETTINGS.screenReader, ...savedSettings.screenReader },
+          screenReader: {
+            ...DEFAULT_ACCESSIBILITY_SETTINGS.screenReader,
+            ...savedSettings.screenReader
+          },
           keyboard: {
             ...DEFAULT_ACCESSIBILITY_SETTINGS.keyboard,
             ...savedSettings.keyboard,
@@ -208,7 +207,8 @@ export const useAccessibilityStore = defineStore('accessibility', () => {
       announcer.setAttribute('aria-live', priority)
       announcer.setAttribute('aria-atomic', 'true')
       announcer.className = 'sr-only'
-      announcer.style.cssText = 'position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;'
+      announcer.style.cssText =
+        'position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;'
       document.body.appendChild(announcer)
     }
 
@@ -256,7 +256,10 @@ export const useAccessibilityStore = defineStore('accessibility', () => {
         medium: 0.2,
         high: 0.3
       }
-      gainNode.gain.setValueAtTime(volumes[settings.value.audio.announcementVolume], audioContext.currentTime)
+      gainNode.gain.setValueAtTime(
+        volumes[settings.value.audio.announcementVolume],
+        audioContext.currentTime
+      )
 
       // Play short beep
       oscillator.start(audioContext.currentTime)
@@ -267,9 +270,13 @@ export const useAccessibilityStore = defineStore('accessibility', () => {
   }
 
   // Watch for settings changes and apply them
-  watch(settings, (newSettings) => {
-    applyA11ySettings(newSettings)
-  }, { deep: true })
+  watch(
+    settings,
+    (newSettings) => {
+      applyA11ySettings(newSettings)
+    },
+    { deep: true }
+  )
 
   return {
     settings: readonly(settings),

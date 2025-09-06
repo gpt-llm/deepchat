@@ -126,7 +126,9 @@
             </Tooltip>
 
             <McpToolsList :aria-describedby="'mcp-tools-description'" />
-            <div id="mcp-tools-description" class="sr-only">{{ t('chat.input.mcpToolsDescription') }}</div>
+            <div id="mcp-tools-description" class="sr-only">
+              {{ t('chat.input.mcpToolsDescription') }}
+            </div>
             <!-- {{ t('chat.input.fileSelect') }} -->
             <slot name="addon-buttons"></slot>
           </div>

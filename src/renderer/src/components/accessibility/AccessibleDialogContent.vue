@@ -46,7 +46,10 @@
       </div>
 
       <!-- 对话框操作区域 -->
-      <div v-if="hasActions" class="dialog-footer flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+      <div
+        v-if="hasActions"
+        class="dialog-footer flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
+      >
         <slot name="actions" />
       </div>
 
@@ -118,7 +121,9 @@ const { focusRestore } = useFocusManagement()
 
 // 生成唯一ID
 const titleId = computed(() => `dialog-title-${Math.random().toString(36).substr(2, 9)}`)
-const descriptionId = computed(() => `dialog-description-${Math.random().toString(36).substr(2, 9)}`)
+const descriptionId = computed(
+  () => `dialog-description-${Math.random().toString(36).substr(2, 9)}`
+)
 
 // 计算属性
 const hasTitle = computed(() => props.title || slots.title)
@@ -126,18 +131,18 @@ const hasDescription = computed(() => props.description || slots.description)
 const hasActions = computed(() => slots.actions)
 
 const delegatedProps = computed(() => {
-  const { 
-    class: _, 
-    title: __, 
-    description: ___, 
-    showCloseButton: ____, 
-    closeButtonLabel: _____, 
+  const {
+    class: _,
+    title: __,
+    description: ___,
+    showCloseButton: ____,
+    closeButtonLabel: _____,
     bodyClass: ______,
     initialFocusSelector: _______,
     autoFocus: ________,
-    ...delegated 
+    ...delegated
   } = props
-  
+
   // 设置ARIA属性
   return {
     ...delegated,
@@ -164,7 +169,9 @@ const handleOpenAutoFocus = (event: Event) => {
 
   // 如果指定了初始聚焦选择器，尝试聚焦指定元素
   if (props.initialFocusSelector && dialogRef.value) {
-    const initialFocusElement = dialogRef.value.querySelector(props.initialFocusSelector) as HTMLElement
+    const initialFocusElement = dialogRef.value.querySelector(
+      props.initialFocusSelector
+    ) as HTMLElement
     if (initialFocusElement) {
       event.preventDefault()
       initialFocusElement.focus()
@@ -182,7 +189,7 @@ const handleCloseAutoFocus = (event: Event) => {
   // 恢复到之前保存的焦点元素
   focusRestore.restoreFocus()
   focusRestore.clearFocus()
-  
+
   // 阻止默认行为，使用我们的焦点恢复逻辑
   event.preventDefault()
 }
@@ -198,7 +205,7 @@ const focusFirstInteractiveElement = () => {
   )
 
   if (focusableElements.length > 0) {
-    (focusableElements[0] as HTMLElement).focus()
+    ;(focusableElements[0] as HTMLElement).focus()
   }
 }
 
@@ -225,7 +232,7 @@ defineExpose({
     padding-bottom: 1rem;
     margin-bottom: 1rem;
   }
-  
+
   .dialog-footer {
     border-top: 1px solid;
     padding-top: 1rem;
@@ -242,8 +249,8 @@ defineExpose({
 
 /* 减少动画设置支持 */
 @media (prefers-reduced-motion: reduce) {
-  :deep([data-state="open"]),
-  :deep([data-state="closed"]) {
+  :deep([data-state='open']),
+  :deep([data-state='closed']) {
     animation: none !important;
     transition: none !important;
   }

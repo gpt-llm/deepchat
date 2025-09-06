@@ -3,7 +3,7 @@
     <Label :for="fieldId" class="text-sm font-medium">
       {{ label }}
     </Label>
-    
+
     <div class="flex items-center space-x-2">
       <Input
         :id="fieldId"
@@ -16,7 +16,7 @@
         :aria-describedby="`${fieldId}-help`"
         :aria-label="`${label}: ${displayValue}${isRecording ? ', Press keys to record shortcut' : ', Click to change'}`"
       />
-      
+
       <Button
         variant="outline"
         size="sm"
@@ -26,7 +26,7 @@
       >
         {{ isRecording ? tFallback('recording') : tFallback('change') }}
       </Button>
-      
+
       <Button
         v-if="isRecording"
         variant="ghost"
@@ -37,7 +37,7 @@
         {{ tFallback('cancel') }}
       </Button>
     </div>
-    
+
     <p :id="`${fieldId}-help`" class="text-xs text-muted-foreground">
       {{ helpText }}
     </p>
@@ -68,8 +68,9 @@ const isRecording = ref(false)
 const pressedKeys = ref(new Set<string>())
 
 // Generate unique ID for accessibility
-const fieldId = computed(() => 
-  `shortcut-${props.label.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9)}`
+const fieldId = computed(
+  () =>
+    `shortcut-${props.label.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9)}`
 )
 
 const displayValue = computed(() => {
@@ -111,13 +112,13 @@ const handleKeyDown = (event: KeyboardEvent) => {
   // Map special keys
   const keyMap: Record<string, string> = {
     ' ': 'Space',
-    'Control': 'Ctrl',
-    'Meta': 'Cmd',
-    'ArrowUp': 'Up',
-    'ArrowDown': 'Down',
-    'ArrowLeft': 'Left',
-    'ArrowRight': 'Right',
-    'Escape': 'Esc'
+    Control: 'Ctrl',
+    Meta: 'Cmd',
+    ArrowUp: 'Up',
+    ArrowDown: 'Down',
+    ArrowLeft: 'Left',
+    ArrowRight: 'Right',
+    Escape: 'Esc'
   }
 
   let key = event.key
@@ -134,7 +135,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
   // Add main key (if not a modifier)
   if (!['Control', 'Alt', 'Shift', 'Meta', 'Ctrl', 'Cmd'].includes(key)) {
     pressedKeys.value.add(key)
-    
+
     // Complete recording when we have a main key
     setTimeout(() => {
       finishRecording()
@@ -147,7 +148,7 @@ const finishRecording = () => {
     const shortcut = Array.from(pressedKeys.value).join('+')
     emit('update:modelValue', shortcut)
   }
-  
+
   isRecording.value = false
   pressedKeys.value.clear()
 }
@@ -159,7 +160,8 @@ const defaultTranslations = {
   cancel: 'Cancel',
   'settings.accessibility.keyboard.noShortcut': 'No shortcut set',
   'settings.accessibility.keyboard.recordingHelp': 'Press the key combination you want to use',
-  'settings.accessibility.keyboard.shortcutHelp': 'Click the Change button and press the desired key combination'
+  'settings.accessibility.keyboard.shortcutHelp':
+    'Click the Change button and press the desired key combination'
 }
 
 // Fallback function for translations
@@ -174,6 +176,8 @@ const tFallback = (key: string) => {
 
 <style scoped>
 .shortcut-field .font-mono {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Monaco, Inconsolata, "Liberation Mono", "Courier New", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Monaco, Inconsolata, 'Liberation Mono', 'Courier New',
+    monospace;
 }
 </style>

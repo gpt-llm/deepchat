@@ -1,5 +1,9 @@
 <template>
-  <div class="flex p-2 flex-col items-center border-r bg-background" role="navigation" aria-label="Main navigation">
+  <div
+    class="flex p-2 flex-col items-center border-r bg-background"
+    role="navigation"
+    aria-label="Main navigation"
+  >
     <!-- Navigation Items -->
     <nav class="flex flex-1 flex-col gap-2" role="list">
       <!-- Chat Section -->

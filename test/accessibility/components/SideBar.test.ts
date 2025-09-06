@@ -49,37 +49,41 @@ describe('SideBar Accessibility', () => {
       Icon: {
         name: 'Icon',
         props: ['icon', 'class'],
-        template: '<span :class="['icon', icon, $props.class]" aria-hidden="true"></span>'
+        template: '<span :class="[\'icon\', icon, $props.class]" aria-hidden="true"></span>'
       }
     }))
 
-    wrapper = await testComponentAccessibility(SideBar, {
-      modelValue: 'chat',
-      'onUpdate:modelValue': vi.fn()
-    }, {
-      global: {
-        stubs: {
-          Button: {
-            name: 'Button',
-            props: ['variant', 'size'],
-            template: `<button 
+    wrapper = await testComponentAccessibility(
+      SideBar,
+      {
+        modelValue: 'chat',
+        'onUpdate:modelValue': vi.fn()
+      },
+      {
+        global: {
+          stubs: {
+            Button: {
+              name: 'Button',
+              props: ['variant', 'size'],
+              template: `<button 
               :class="[variant, size, $attrs.class]"
               type="button"
               :aria-current="$attrs['aria-current']"
               @click="$emit('click')"
               v-bind="$attrs"
             ><slot /></button>`,
-            emits: ['click'],
-            inheritAttrs: false
-          },
-          Icon: {
-            name: 'Icon', 
-            props: ['icon'],
-            template: '<span :class="icon" aria-hidden="true"></span>'
+              emits: ['click'],
+              inheritAttrs: false
+            },
+            Icon: {
+              name: 'Icon',
+              props: ['icon'],
+              template: '<span :class="icon" aria-hidden="true"></span>'
+            }
           }
         }
       }
-    })
+    )
   })
 
   afterEach(() => {
@@ -91,7 +95,7 @@ describe('SideBar Accessibility', () => {
     it('should have proper landmark and navigation structure', () => {
       // Test main navigation landmark
       testAriaAttributes(wrapper, {
-        'role': 'navigation',
+        role: 'navigation',
         'aria-label': 'Main navigation'
       })
 
@@ -114,15 +118,15 @@ describe('SideBar Accessibility', () => {
 
     it('should have proper button accessibility', () => {
       const buttons = wrapper.findAll('button')
-      
+
       buttons.forEach((button, index) => {
         // Each button should be keyboard accessible
         expect(button.attributes('type')).toBe('button')
-        
+
         // Should have screen reader text or aria-label
         const screenReaderText = button.find('.sr-only')
         const ariaLabel = button.attributes('aria-label')
-        
+
         expect(
           screenReaderText.exists() || ariaLabel,
           `Button ${index} should have accessible text`
@@ -139,8 +143,8 @@ describe('SideBar Accessibility', () => {
     it('should have icons marked as decorative', () => {
       const icons = wrapper.findAll('[aria-hidden="true"]')
       expect(icons.length).toBeGreaterThan(0)
-      
-      icons.forEach(icon => {
+
+      icons.forEach((icon) => {
         expect(icon.attributes('aria-hidden')).toBe('true')
       })
     })
@@ -149,7 +153,7 @@ describe('SideBar Accessibility', () => {
   describe('Keyboard Navigation', () => {
     it('should support arrow key navigation between items', async () => {
       const buttons = wrapper.findAll('button')
-      
+
       // Focus first button
       await buttons[0].element.focus()
       expect(document.activeElement).toBe(buttons[0].element)
@@ -168,7 +172,7 @@ describe('SideBar Accessibility', () => {
           key: 'ArrowUp',
           expectedFocus: 'button:nth-child(1)',
           expectedBehavior: () => {
-            // Should move to previous navigation item  
+            // Should move to previous navigation item
             expect(document.activeElement).toBe(buttons[0].element)
           }
         }
@@ -192,7 +196,7 @@ describe('SideBar Accessibility', () => {
       // Test if sidebar provides keyboard shortcuts for navigation
       // This would depend on implementation
       const navigationItems = wrapper.findAll('[role="listitem"] button')
-      
+
       navigationItems.forEach((item, index) => {
         // Could test for accesskey or custom keyboard shortcuts
         const accessKey = item.attributes('accesskey')
@@ -219,14 +223,14 @@ describe('SideBar Accessibility', () => {
 
     it('should have proper focus indicators', async () => {
       const buttons = wrapper.findAll('button')
-      
+
       for (const button of buttons) {
         await button.element.focus()
         await waitForA11yUpdates(wrapper)
-        
+
         // Focus should be visible (this would be tested with actual styles)
         expect(document.activeElement).toBe(button.element)
-        
+
         // Should have focus styles applied
         const computedStyle = window.getComputedStyle(button.element)
         // In a real test, you'd check for actual focus styles
@@ -238,18 +242,16 @@ describe('SideBar Accessibility', () => {
       // If sidebar can be modal (e.g., on mobile), test focus trapping
       // This would depend on implementation details
       const focusableElements = findFocusableElements(wrapper.element as HTMLElement)
-      
+
       if (focusableElements.length > 1) {
         // Focus last element
         focusableElements[focusableElements.length - 1].focus()
-        
+
         // Tab should cycle to first element
-        await simulateUserInteraction(
-          focusableElements[focusableElements.length - 1], 
-          'keydown', 
-          { key: 'Tab' }
-        )
-        
+        await simulateUserInteraction(focusableElements[focusableElements.length - 1], 'keydown', {
+          key: 'Tab'
+        })
+
         // Should cycle back to first focusable element
         expect(document.activeElement).toBe(focusableElements[0])
       }
@@ -270,14 +272,14 @@ describe('SideBar Accessibility', () => {
       // Should announce the navigation change
       // In real implementation, this would be handled by router or state change
       expect(liveRegion.textContent).toContain('settings')
-      
+
       document.body.removeChild(liveRegion)
     })
 
     it('should provide context for navigation items', () => {
       const buttons = wrapper.findAll('button')
-      
-      buttons.forEach(button => {
+
+      buttons.forEach((button) => {
         const screenReaderText = button.find('.sr-only')
         if (screenReaderText.exists()) {
           expect(screenReaderText.text()).toBeTruthy()
@@ -290,7 +292,7 @@ describe('SideBar Accessibility', () => {
       // Current page should be clearly marked
       const currentButton = wrapper.find('button[aria-current="page"]')
       expect(currentButton.exists()).toBe(true)
-      
+
       // Should have visual and programmatic indication
       expect(currentButton.classes()).toContain('bg-accent')
     })
@@ -308,7 +310,7 @@ describe('SideBar Accessibility', () => {
 
       // Buttons should still be focusable and have proper labels
       const buttons = wrapper.findAll('button')
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button.attributes('tabindex')).not.toBe('-1')
       })
     })
@@ -317,7 +319,7 @@ describe('SideBar Accessibility', () => {
       // Mock mobile viewport
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: vi.fn().mockImplementation(query => ({
+        value: vi.fn().mockImplementation((query) => ({
           matches: query.includes('max-width'),
           media: query,
           onchange: null,
@@ -325,8 +327,8 @@ describe('SideBar Accessibility', () => {
           removeListener: vi.fn(),
           addEventListener: vi.fn(),
           removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        })),
+          dispatchEvent: vi.fn()
+        }))
       })
 
       // In mobile, sidebar might become a modal or drawer
@@ -339,10 +341,10 @@ describe('SideBar Accessibility', () => {
   describe('State Management', () => {
     it('should emit proper events on navigation', async () => {
       const buttons = wrapper.findAll('button')
-      
+
       // Click settings button
       await buttons[1].trigger('click')
-      
+
       const emitted = wrapper.emitted('update:modelValue')
       expect(emitted).toBeTruthy()
       expect(emitted![0]).toEqual(['settings'])
@@ -366,22 +368,23 @@ describe('SideBar Accessibility', () => {
   describe('Icon Accessibility', () => {
     it('should have decorative icons properly marked', () => {
       const icons = wrapper.findAll('[aria-hidden="true"]')
-      
+
       // All icons should be marked as decorative since buttons have text labels
-      icons.forEach(icon => {
+      icons.forEach((icon) => {
         expect(icon.attributes('aria-hidden')).toBe('true')
       })
     })
 
     it('should not rely solely on icons for meaning', () => {
       const buttons = wrapper.findAll('button')
-      
-      buttons.forEach(button => {
+
+      buttons.forEach((button) => {
         // Each button should have text content (even if visually hidden)
-        const hasTextContent = button.find('.sr-only').exists() || 
-                              button.text().trim().length > 0 ||
-                              button.attributes('aria-label')
-        
+        const hasTextContent =
+          button.find('.sr-only').exists() ||
+          button.text().trim().length > 0 ||
+          button.attributes('aria-label')
+
         expect(hasTextContent).toBe(true)
       })
     })
@@ -391,10 +394,10 @@ describe('SideBar Accessibility', () => {
     it('should work with Vue Router accessibility', async () => {
       // Test that navigation integrates properly with Vue Router
       // for accessibility features like route announcements
-      
+
       const buttons = wrapper.findAll('button')
       await buttons[1].trigger('click')
-      
+
       // Should emit update event for router
       expect(wrapper.emitted('update:modelValue')).toBeTruthy()
     })
@@ -402,11 +405,11 @@ describe('SideBar Accessibility', () => {
     it('should maintain focus on route changes', async () => {
       const button = wrapper.findAll('button')[1]
       await button.element.focus()
-      
+
       // Simulate route change
       await button.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       // Focus should be maintained or moved appropriately
       expect(document.activeElement).toBe(button.element)
     })
@@ -415,20 +418,20 @@ describe('SideBar Accessibility', () => {
   describe('Color and Contrast', () => {
     it('should have sufficient color contrast', async () => {
       const buttons = wrapper.findAll('button')
-      
+
       for (const button of buttons) {
         // Test normal state
         const normalStyles = window.getComputedStyle(button.element)
-        
+
         // Test active state
         if (button.attributes('aria-current') === 'page') {
           expect(button.classes()).toContain('bg-accent')
         }
-        
+
         // Test focus state
         await button.element.focus()
         const focusStyles = window.getComputedStyle(button.element)
-        
+
         // In a real implementation, you'd calculate actual contrast ratios
         expect(focusStyles.outline || focusStyles.boxShadow).toBeTruthy()
       }

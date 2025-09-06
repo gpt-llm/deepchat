@@ -40,7 +40,7 @@ describe('ChatView Accessibility', () => {
           timestamp: Date.now()
         },
         {
-          id: 'msg-2', 
+          id: 'msg-2',
           role: 'assistant',
           content: 'Hi there! How can I help you?',
           timestamp: Date.now()
@@ -77,7 +77,7 @@ describe('ChatView Accessibility', () => {
       }
     }))
 
-    // Mock ChatInput component  
+    // Mock ChatInput component
     vi.doMock('@renderer/components/ChatInput.vue', () => ({
       default: {
         name: 'ChatInput',
@@ -112,29 +112,32 @@ describe('ChatView Accessibility', () => {
       appearance: { theme: 'light' }
     }
 
-    wrapper = await testComponentAccessibility(ChatView, {}, {
-      global: {
-        mocks: {
-          $t: (key: string) => {
-            const translations: Record<string, string> = {
-              'chat.skipToMainContent': 'Skip to main content',
-              'chat.chatConversation': 'Chat conversation',
-              'chat.messageHistory': 'Message history',
-              'chat.inputArea': 'Message input area',
-              'chat.messageInput': 'Type your message'
+    wrapper = await testComponentAccessibility(
+      ChatView,
+      {},
+      {
+        global: {
+          mocks: {
+            $t: (key: string) => {
+              const translations: Record<string, string> = {
+                'chat.skipToMainContent': 'Skip to main content',
+                'chat.chatConversation': 'Chat conversation',
+                'chat.messageHistory': 'Message history',
+                'chat.inputArea': 'Message input area',
+                'chat.messageInput': 'Type your message'
+              }
+              return translations[key] || key
             }
-            return translations[key] || key
-          }
-        },
-        provide: {
-          chatStore: mockChatStore,
-          settingsStore: mockSettingsStore
-        },
-        stubs: {
-          MessageList: {
-            name: 'MessageList',
-            props: ['messages'],
-            template: `
+          },
+          provide: {
+            chatStore: mockChatStore,
+            settingsStore: mockSettingsStore
+          },
+          stubs: {
+            MessageList: {
+              name: 'MessageList',
+              props: ['messages'],
+              template: `
               <div 
                 class="message-list" 
                 role="log" 
@@ -154,12 +157,12 @@ describe('ChatView Accessibility', () => {
                 </div>
               </div>
             `,
-            emits: ['scroll-bottom']
-          },
-          ChatInput: {
-            name: 'ChatInput', 
-            props: ['disabled'],
-            template: `
+              emits: ['scroll-bottom']
+            },
+            ChatInput: {
+              name: 'ChatInput',
+              props: ['disabled'],
+              template: `
               <div 
                 class="chat-input"
                 role="textbox"
@@ -173,18 +176,19 @@ describe('ChatView Accessibility', () => {
                 <input type="text" placeholder="Type your message..." />
               </div>
             `,
-            emits: ['send', 'file-upload'],
-            methods: {
-              handleKeydown(event: KeyboardEvent) {
-                if (event.key === 'Enter' && !event.shiftKey) {
-                  this.$emit('send', { content: 'test message' })
+              emits: ['send', 'file-upload'],
+              methods: {
+                handleKeydown(event: KeyboardEvent) {
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    this.$emit('send', { content: 'test message' })
+                  }
                 }
               }
             }
           }
         }
       }
-    })
+    )
   })
 
   afterEach(() => {
@@ -202,7 +206,7 @@ describe('ChatView Accessibility', () => {
 
       // Test main landmark
       testAriaAttributes(wrapper.find('#main-chat-area'), {
-        'role': 'main',
+        role: 'main',
         'aria-label': 'Chat conversation'
       })
 
@@ -226,9 +230,9 @@ describe('ChatView Accessibility', () => {
     it('should have proper ARIA live regions', () => {
       const messageArea = wrapper.find('[role="log"]')
       expect(messageArea.exists()).toBe(true)
-      
+
       testAriaAttributes(messageArea, {
-        'role': 'log',
+        role: 'log',
         'aria-live': 'polite',
         'aria-label': 'Message history'
       })
@@ -237,7 +241,7 @@ describe('ChatView Accessibility', () => {
     it('should have accessible skip navigation', () => {
       const skipLink = wrapper.find('a[href="#main-chat-area"]')
       expect(skipLink.exists()).toBe(true)
-      
+
       // Should be hidden by default but visible on focus
       expect(skipLink.classes()).toContain('sr-only')
       expect(skipLink.classes()).toContain('focus:not-sr-only')
@@ -247,7 +251,7 @@ describe('ChatView Accessibility', () => {
   describe('Keyboard Navigation', () => {
     it('should support skip link navigation', async () => {
       const skipLink = wrapper.find('a[href="#main-chat-area"]')
-      
+
       await skipLink.element.focus()
       expect(document.activeElement).toBe(skipLink.element)
 
@@ -273,7 +277,7 @@ describe('ChatView Accessibility', () => {
           expectedFocus: '.message-item:first-child'
         },
         {
-          key: 'ArrowDown', 
+          key: 'ArrowDown',
           expectedFocus: '.message-item:nth-child(2)'
         },
         {
@@ -302,13 +306,13 @@ describe('ChatView Accessibility', () => {
       // If chat view has modal interactions (like file preview)
       // test that focus is properly trapped
       const focusableElements = findFocusableElements(wrapper.element as HTMLElement)
-      
+
       expect(focusableElements.length).toBeGreaterThan(0)
-      
+
       // Test that Tab cycles through focusable elements
       if (focusableElements.length > 1) {
         focusableElements[0].focus()
-        
+
         await simulateUserInteraction(focusableElements[0], 'keydown', { key: 'Tab' })
         expect(document.activeElement).toBe(focusableElements[1])
       }
@@ -318,7 +322,7 @@ describe('ChatView Accessibility', () => {
   describe('Focus Management', () => {
     it('should manage focus when new messages arrive', async () => {
       const messageList = wrapper.find('[data-testid="message-list"]')
-      
+
       await testFocusManagement(wrapper, [
         {
           action: async () => {
@@ -327,12 +331,12 @@ describe('ChatView Accessibility', () => {
               ...mockChatStore.getMessages(),
               {
                 id: 'msg-3',
-                role: 'assistant', 
+                role: 'assistant',
                 content: 'New message',
                 timestamp: Date.now()
               }
             ])
-            
+
             await wrapper.vm.$forceUpdate()
             await waitForA11yUpdates(wrapper)
           },
@@ -358,7 +362,7 @@ describe('ChatView Accessibility', () => {
       // Change active thread
       mockChatStore.getActiveThreadId.mockReturnValue('thread-2')
       mockChatStore.getMessages.mockReturnValue([])
-      
+
       await wrapper.vm.$forceUpdate()
       await waitForA11yUpdates(wrapper)
 
@@ -378,9 +382,9 @@ describe('ChatView Accessibility', () => {
         {
           trigger: async () => {
             // Simulate new message
-            await wrapper.vm.$emit('new-message', { 
+            await wrapper.vm.$emit('new-message', {
               content: 'New assistant message',
-              role: 'assistant' 
+              role: 'assistant'
             })
           },
           expectedText: 'New assistant message',
@@ -391,8 +395,8 @@ describe('ChatView Accessibility', () => {
 
     it('should provide proper context for messages', () => {
       const messages = wrapper.findAll('.message-item')
-      
-      messages.forEach(message => {
+
+      messages.forEach((message) => {
         // Each message should have context about sender
         expect(message.attributes('role')).toBe('article')
         expect(message.attributes('aria-label')).toMatch(/message from (user|assistant)/i)
@@ -411,7 +415,7 @@ describe('ChatView Accessibility', () => {
       await waitForA11yUpdates(wrapper)
 
       expect(statusRegion.textContent).toBe('Assistant is typing...')
-      
+
       document.body.removeChild(statusRegion)
     })
   })
@@ -422,7 +426,7 @@ describe('ChatView Accessibility', () => {
       const messages = wrapper.findAll('.message-item')
 
       await messageList.element.focus()
-      
+
       // Should be able to navigate through messages
       for (let i = 0; i < messages.length; i++) {
         await simulateUserInteraction(messageList.element, 'keydown', { key: 'ArrowDown' })
@@ -432,8 +436,8 @@ describe('ChatView Accessibility', () => {
 
     it('should provide message context and metadata', () => {
       const messages = wrapper.findAll('.message-item')
-      
-      messages.forEach(message => {
+
+      messages.forEach((message) => {
         // Should indicate message role and content
         const ariaLabel = message.attributes('aria-label')
         expect(ariaLabel).toMatch(/message from/i)
@@ -443,7 +447,7 @@ describe('ChatView Accessibility', () => {
 
     it('should handle message selection and actions', async () => {
       const firstMessage = wrapper.find('.message-item')
-      
+
       await firstMessage.trigger('click')
       await waitForA11yUpdates(wrapper)
 
@@ -456,9 +460,9 @@ describe('ChatView Accessibility', () => {
   describe('Input Area Accessibility', () => {
     it('should have properly labeled input', () => {
       const chatInput = wrapper.find('[data-testid="chat-input"]')
-      
+
       testAriaAttributes(chatInput, {
-        'role': 'textbox',
+        role: 'textbox',
         'aria-multiline': 'true',
         'aria-label': 'Type your message'
       })
@@ -482,7 +486,7 @@ describe('ChatView Accessibility', () => {
     it('should announce errors accessibly', async () => {
       // Mock error state
       const errorMessage = 'Failed to send message'
-      
+
       const errorDiv = document.createElement('div')
       errorDiv.setAttribute('role', 'alert')
       errorDiv.setAttribute('aria-live', 'assertive')
@@ -501,7 +505,7 @@ describe('ChatView Accessibility', () => {
       const retryButton = document.createElement('button')
       retryButton.setAttribute('aria-label', 'Retry sending message')
       retryButton.textContent = 'Retry'
-      
+
       expect(retryButton.getAttribute('aria-label')).toBeTruthy()
     })
   })
@@ -509,7 +513,11 @@ describe('ChatView Accessibility', () => {
   describe('Responsive Behavior', () => {
     it('should maintain accessibility in mobile layout', async () => {
       // Mock mobile viewport
-      Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 375 })
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 375
+      })
       window.dispatchEvent(new Event('resize'))
 
       await waitForA11yUpdates(wrapper)
@@ -517,7 +525,7 @@ describe('ChatView Accessibility', () => {
       // All accessibility features should still work
       const skipLink = wrapper.find('a[href="#main-chat-area"]')
       expect(skipLink.exists()).toBe(true)
-      
+
       const mainArea = wrapper.find('#main-chat-area')
       expect(mainArea.attributes('role')).toBe('main')
     })
@@ -525,7 +533,7 @@ describe('ChatView Accessibility', () => {
     it('should handle touch interactions accessibly', async () => {
       // Touch interactions should not interfere with keyboard/screen reader use
       const messageList = wrapper.find('[data-testid="message-list"]')
-      
+
       await messageList.trigger('touchstart')
       await waitForA11yUpdates(wrapper)
 
@@ -539,7 +547,7 @@ describe('ChatView Accessibility', () => {
       // Mock high contrast preference
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: vi.fn().mockImplementation(query => ({
+        value: vi.fn().mockImplementation((query) => ({
           matches: query.includes('prefers-contrast: high'),
           media: query,
           onchange: null,
@@ -547,8 +555,8 @@ describe('ChatView Accessibility', () => {
           removeListener: vi.fn(),
           addEventListener: vi.fn(),
           removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        })),
+          dispatchEvent: vi.fn()
+        }))
       })
 
       await waitForA11yUpdates(wrapper)
@@ -562,7 +570,7 @@ describe('ChatView Accessibility', () => {
       // Mock reduced motion preference
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: vi.fn().mockImplementation(query => ({
+        value: vi.fn().mockImplementation((query) => ({
           matches: query.includes('prefers-reduced-motion: reduce'),
           media: query,
           onchange: null,
@@ -570,8 +578,8 @@ describe('ChatView Accessibility', () => {
           removeListener: vi.fn(),
           addEventListener: vi.fn(),
           removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        })),
+          dispatchEvent: vi.fn()
+        }))
       })
 
       // Animations should be reduced or disabled
@@ -584,8 +592,8 @@ describe('ChatView Accessibility', () => {
     it('should work with screen reader software', () => {
       // Test with common screen reader patterns
       const focusableElements = findFocusableElements(wrapper.element as HTMLElement)
-      
-      focusableElements.forEach(element => {
+
+      focusableElements.forEach((element) => {
         expect(isVisibleToScreenReaders(element)).toBe(true)
       })
     })

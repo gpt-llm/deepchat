@@ -88,7 +88,7 @@ const SkipLinksComponent = defineComponent({
       </div>
     </div>
   `,
-  
+
   setup() {
     const showSearchSkip = ref(true)
     const lastFocusedElement = ref<HTMLElement | null>(null)
@@ -97,12 +97,12 @@ const SkipLinksComponent = defineComponent({
     const handleSkipToMain = (event: Event) => {
       event.preventDefault()
       skipActivationCount.value++
-      
+
       const mainElement = document.getElementById('main-content')
       if (mainElement) {
         mainElement.focus()
         lastFocusedElement.value = mainElement
-        
+
         // Announce to screen readers
         announceToScreenReader('Skipped to main content')
       }
@@ -111,7 +111,7 @@ const SkipLinksComponent = defineComponent({
     const handleSkipToNavigation = (event: Event) => {
       event.preventDefault()
       skipActivationCount.value++
-      
+
       const navElement = document.getElementById('navigation')
       if (navElement) {
         navElement.focus()
@@ -123,7 +123,7 @@ const SkipLinksComponent = defineComponent({
     const handleSkipToSearch = (event: Event) => {
       event.preventDefault()
       skipActivationCount.value++
-      
+
       const searchElement = document.getElementById('search')
       if (searchElement) {
         searchElement.focus()
@@ -135,7 +135,7 @@ const SkipLinksComponent = defineComponent({
     const handleSkipToInput = (event: Event) => {
       event.preventDefault()
       skipActivationCount.value++
-      
+
       const inputArea = document.getElementById('chat-input')
       const inputElement = inputArea?.querySelector('input')
       if (inputElement) {
@@ -156,7 +156,7 @@ const SkipLinksComponent = defineComponent({
         liveRegion.className = 'sr-only'
         document.body.appendChild(liveRegion)
       }
-      
+
       liveRegion.textContent = message
     }
 
@@ -179,21 +179,25 @@ describe('SkipLinks Accessibility', () => {
   beforeEach(async () => {
     testEnvironment = setupA11yTestEnvironment()
 
-    wrapper = await testComponentAccessibility(SkipLinksComponent, {}, {
-      global: {
-        mocks: {
-          $t: (key: string) => {
-            const translations: Record<string, string> = {
-              'accessibility.skipToMainContent': 'Skip to main content',
-              'accessibility.skipToNavigation': 'Skip to navigation',
-              'accessibility.skipToSearch': 'Skip to search',
-              'accessibility.skipToChatInput': 'Skip to chat input'
+    wrapper = await testComponentAccessibility(
+      SkipLinksComponent,
+      {},
+      {
+        global: {
+          mocks: {
+            $t: (key: string) => {
+              const translations: Record<string, string> = {
+                'accessibility.skipToMainContent': 'Skip to main content',
+                'accessibility.skipToNavigation': 'Skip to navigation',
+                'accessibility.skipToSearch': 'Skip to search',
+                'accessibility.skipToChatInput': 'Skip to chat input'
+              }
+              return translations[key] || key
             }
-            return translations[key] || key
           }
         }
       }
-    })
+    )
 
     await waitForA11yUpdates(wrapper)
   })
@@ -201,7 +205,7 @@ describe('SkipLinks Accessibility', () => {
   afterEach(() => {
     wrapper?.unmount()
     testEnvironment.cleanup()
-    
+
     // Clean up any created live regions
     const liveRegion = document.getElementById('skip-announcements')
     if (liveRegion) {
@@ -224,8 +228,8 @@ describe('SkipLinks Accessibility', () => {
       // All skip links should be anchor elements
       const skipLinks = wrapper.findAll('.skip-link')
       expect(skipLinks.length).toBeGreaterThan(0)
-      
-      skipLinks.forEach(link => {
+
+      skipLinks.forEach((link) => {
         expect(link.element.tagName.toLowerCase()).toBe('a')
         expect(link.attributes('href')).toMatch(/^#/)
       })
@@ -233,8 +237,8 @@ describe('SkipLinks Accessibility', () => {
 
     it('should be hidden by default but visible on focus', () => {
       const skipLinks = wrapper.findAll('.skip-link')
-      
-      skipLinks.forEach(link => {
+
+      skipLinks.forEach((link) => {
         // Should be screen reader only by default
         expect(link.classes()).toContain('sr-only')
         expect(link.classes()).toContain('focus:not-sr-only')
@@ -245,7 +249,7 @@ describe('SkipLinks Accessibility', () => {
     it('should have proper ARIA attributes', () => {
       const skipLinksNav = wrapper.find('.skip-links')
       testAriaAttributes(skipLinksNav, {
-        'role': 'navigation',
+        role: 'navigation',
         'aria-label': 'Skip navigation'
       })
     })
@@ -254,11 +258,11 @@ describe('SkipLinks Accessibility', () => {
       const skipLinks = wrapper.findAll('.skip-link')
       const expectedTexts = [
         'Skip to main content',
-        'Skip to navigation', 
+        'Skip to navigation',
         'Skip to search',
         'Skip to chat input'
       ]
-      
+
       skipLinks.forEach((link, index) => {
         expect(link.text().trim()).toBe(expectedTexts[index])
       })
@@ -269,10 +273,10 @@ describe('SkipLinks Accessibility', () => {
     it('should be accessible via Tab key', async () => {
       // Focus should start at first skip link when tabbing from top of page
       const firstSkipLink = wrapper.find('[data-testid="skip-to-main"]')
-      
+
       await firstSkipLink.element.focus()
       expect(document.activeElement).toBe(firstSkipLink.element)
-      
+
       // Should become visible on focus
       expect(firstSkipLink.classes()).toContain('focus:not-sr-only')
     })
@@ -284,7 +288,7 @@ describe('SkipLinks Accessibility', () => {
           expectedFocus: '[data-testid="skip-to-main"]'
         },
         {
-          key: 'Tab', 
+          key: 'Tab',
           expectedFocus: '[data-testid="skip-to-nav"]'
         },
         {
@@ -305,7 +309,7 @@ describe('SkipLinks Accessibility', () => {
       // Test Enter key
       await skipToMain.trigger('keydown', { key: 'Enter' })
       await waitForA11yUpdates(wrapper)
-      
+
       expect(wrapper.vm.skipActivationCount).toBe(1)
       expect(document.activeElement?.id).toBe('main-content')
 
@@ -313,7 +317,7 @@ describe('SkipLinks Accessibility', () => {
       await skipToMain.element.focus()
       await skipToMain.trigger('keydown', { key: ' ' })
       await waitForA11yUpdates(wrapper)
-      
+
       expect(wrapper.vm.skipActivationCount).toBe(2)
     })
   })
@@ -322,11 +326,11 @@ describe('SkipLinks Accessibility', () => {
     it('should move focus to main content', async () => {
       const skipToMain = wrapper.find('[data-testid="skip-to-main"]')
       const mainContent = wrapper.find('[data-testid="main-content"]')
-      
+
       await skipToMain.element.focus()
       await skipToMain.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       expect(document.activeElement).toBe(mainContent.element)
       expect(wrapper.vm.lastFocusedElement).toBe(mainContent.element)
     })
@@ -334,22 +338,22 @@ describe('SkipLinks Accessibility', () => {
     it('should move focus to navigation', async () => {
       const skipToNav = wrapper.find('[data-testid="skip-to-nav"]')
       const navigation = wrapper.find('[data-testid="main-navigation"]')
-      
+
       await skipToNav.element.focus()
       await skipToNav.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       expect(document.activeElement).toBe(navigation.element)
     })
 
     it('should move focus to search section', async () => {
       const skipToSearch = wrapper.find('[data-testid="skip-to-search"]')
       const searchSection = wrapper.find('[data-testid="search-section"]')
-      
+
       await skipToSearch.element.focus()
       await skipToSearch.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       expect(document.activeElement).toBe(searchSection.element)
     })
 
@@ -357,11 +361,11 @@ describe('SkipLinks Accessibility', () => {
       const skipToInput = wrapper.find('[data-testid="skip-to-input"]')
       const inputArea = wrapper.find('[data-testid="chat-input-area"]')
       const inputElement = inputArea.find('input')
-      
+
       await skipToInput.element.focus()
       await skipToInput.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       expect(document.activeElement).toBe(inputElement.element)
     })
   })
@@ -369,10 +373,10 @@ describe('SkipLinks Accessibility', () => {
   describe('Screen Reader Support', () => {
     it('should announce skip actions to screen readers', async () => {
       const skipToMain = wrapper.find('[data-testid="skip-to-main"]')
-      
+
       await skipToMain.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       const liveRegion = document.getElementById('skip-announcements')
       expect(liveRegion).toBeTruthy()
       expect(liveRegion?.getAttribute('aria-live')).toBe('polite')
@@ -384,7 +388,7 @@ describe('SkipLinks Accessibility', () => {
       const skipToMain = wrapper.find('[data-testid="skip-to-main"]')
       await skipToMain.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       const liveRegion = document.getElementById('skip-announcements')
       expect(liveRegion?.getAttribute('aria-live')).toBe('polite')
       expect(liveRegion?.getAttribute('aria-atomic')).toBe('true')
@@ -394,16 +398,16 @@ describe('SkipLinks Accessibility', () => {
     it('should update announcements for different skip actions', async () => {
       const skipToNav = wrapper.find('[data-testid="skip-to-nav"]')
       const skipToInput = wrapper.find('[data-testid="skip-to-input"]')
-      
+
       await skipToNav.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       const liveRegion = document.getElementById('skip-announcements')
       expect(liveRegion?.textContent).toBe('Skipped to navigation')
-      
-      await skipToInput.trigger('click')  
+
+      await skipToInput.trigger('click')
       await waitForA11yUpdates(wrapper)
-      
+
       expect(liveRegion?.textContent).toBe('Skipped to chat input')
     })
   })
@@ -412,17 +416,17 @@ describe('SkipLinks Accessibility', () => {
     it('should show/hide skip links based on content availability', async () => {
       // Initially search skip should be visible
       expect(wrapper.find('[data-testid="skip-to-search"]').exists()).toBe(true)
-      
+
       // Hide search section
       wrapper.vm.showSearchSkip = false
       await waitForA11yUpdates(wrapper)
-      
+
       expect(wrapper.find('[data-testid="skip-to-search"]').exists()).toBe(false)
-      
+
       // Show search section again
       wrapper.vm.showSearchSkip = true
       await waitForA11yUpdates(wrapper)
-      
+
       expect(wrapper.find('[data-testid="skip-to-search"]').exists()).toBe(true)
     })
 
@@ -430,9 +434,9 @@ describe('SkipLinks Accessibility', () => {
       // Remove target element
       const mainContent = document.getElementById('main-content')
       mainContent?.remove()
-      
+
       const skipToMain = wrapper.find('[data-testid="skip-to-main"]')
-      
+
       // Should not throw error when target is missing
       expect(async () => {
         await skipToMain.trigger('click')
@@ -445,7 +449,7 @@ describe('SkipLinks Accessibility', () => {
     it('should have high contrast when visible', async () => {
       const skipLink = wrapper.find('[data-testid="skip-to-main"]')
       await skipLink.element.focus()
-      
+
       // Should have high contrast background/text colors
       expect(skipLink.classes()).toContain('focus:bg-primary')
       expect(skipLink.classes()).toContain('focus:text-primary-foreground')
@@ -453,25 +457,25 @@ describe('SkipLinks Accessibility', () => {
 
     it('should be positioned properly when visible', async () => {
       const skipLinks = wrapper.findAll('.skip-link')
-      
-      skipLinks.forEach(link => {
+
+      skipLinks.forEach((link) => {
         expect(link.classes()).toContain('focus:absolute')
         expect(link.classes()).toContain('focus:z-50') // High z-index
         expect(link.classes()).toContain('focus:top-2')
       })
-      
+
       // Should be positioned to avoid overlap
       const mainSkip = wrapper.find('[data-testid="skip-to-main"]')
       const navSkip = wrapper.find('[data-testid="skip-to-nav"]')
-      
+
       expect(mainSkip.classes()).toContain('focus:left-2')
       expect(navSkip.classes()).toContain('focus:left-32')
     })
 
     it('should have proper sizing and padding', async () => {
       const skipLinks = wrapper.findAll('.skip-link')
-      
-      skipLinks.forEach(link => {
+
+      skipLinks.forEach((link) => {
         expect(link.classes()).toContain('focus:px-3')
         expect(link.classes()).toContain('focus:py-2')
         expect(link.classes()).toContain('focus:rounded-md')
@@ -496,12 +500,12 @@ describe('SkipLinks Accessibility', () => {
     it('should respect tabindex on target elements', () => {
       const targetElements = [
         wrapper.find('#navigation'),
-        wrapper.find('#main-content'), 
+        wrapper.find('#main-content'),
         wrapper.find('#search'),
         wrapper.find('#chat-input')
       ]
-      
-      targetElements.forEach(element => {
+
+      targetElements.forEach((element) => {
         if (element.exists()) {
           expect(element.attributes('tabindex')).toBe('-1')
         }
@@ -512,14 +516,14 @@ describe('SkipLinks Accessibility', () => {
   describe('Error Handling and Edge Cases', () => {
     it('should handle rapid skip link activation', async () => {
       const skipToMain = wrapper.find('[data-testid="skip-to-main"]')
-      
+
       // Rapidly click multiple times
       for (let i = 0; i < 5; i++) {
         await skipToMain.trigger('click')
       }
-      
+
       await waitForA11yUpdates(wrapper)
-      
+
       // Should handle gracefully without errors
       expect(wrapper.vm.skipActivationCount).toBe(5)
       expect(document.activeElement?.id).toBe('main-content')
@@ -528,11 +532,11 @@ describe('SkipLinks Accessibility', () => {
     it('should work when JavaScript is disabled', () => {
       // Skip links should still work as regular anchor links
       const skipLinks = wrapper.findAll('.skip-link')
-      
-      skipLinks.forEach(link => {
+
+      skipLinks.forEach((link) => {
         const href = link.attributes('href')
         expect(href).toMatch(/^#\w+/)
-        
+
         // Target element should exist
         const targetId = href?.substring(1)
         const targetElement = document.getElementById(targetId!)
@@ -543,15 +547,15 @@ describe('SkipLinks Accessibility', () => {
     it('should maintain functionality during page navigation', async () => {
       // Simulate page navigation/route change
       const skipToMain = wrapper.find('[data-testid="skip-to-main"]')
-      
+
       // Skip link should work before and after simulated navigation
       await skipToMain.trigger('click')
       expect(document.activeElement?.id).toBe('main-content')
-      
+
       // Simulate route change (in real app this might reload content)
       await wrapper.vm.$forceUpdate()
       await waitForA11yUpdates(wrapper)
-      
+
       // Should still work after navigation
       await skipToMain.trigger('click')
       expect(document.activeElement?.id).toBe('main-content')
@@ -563,28 +567,23 @@ describe('SkipLinks Accessibility', () => {
       // Skip links should target elements with appropriate landmark roles
       const mainContent = wrapper.find('#main-content')
       const navigation = wrapper.find('#navigation')
-      
+
       expect(mainContent.element.tagName.toLowerCase()).toBe('main')
       expect(navigation.element.tagName.toLowerCase()).toBe('nav')
     })
 
     it('should be ordered logically', () => {
       const skipLinks = wrapper.findAll('.skip-link')
-      const hrefs = skipLinks.map(link => link.attributes('href'))
-      
+      const hrefs = skipLinks.map((link) => link.attributes('href'))
+
       // Should be in logical reading order
-      expect(hrefs).toEqual([
-        '#main-content',
-        '#navigation',
-        '#search', 
-        '#chat-input'
-      ])
+      expect(hrefs).toEqual(['#main-content', '#navigation', '#search', '#chat-input'])
     })
 
     it('should be the first focusable elements on page', () => {
       const allFocusable = findFocusableElements(wrapper.element as HTMLElement)
       const skipLinks = wrapper.findAll('.skip-link')
-      
+
       // First few focusable elements should be skip links
       skipLinks.forEach((link, index) => {
         expect(allFocusable[index]).toBe(link.element)

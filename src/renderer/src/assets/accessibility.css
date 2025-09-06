@@ -33,7 +33,7 @@
 
 /* Completely disable decorative animations */
 .a11y-reduced-motion .decorative-animation,
-.a11y-reduced-motion [data-animation="decorative"] {
+.a11y-reduced-motion [data-animation='decorative'] {
   animation: none !important;
   transition: none !important;
 }
@@ -46,14 +46,14 @@
     --motion-duration-slow: 0ms;
     --motion-easing: linear;
   }
-  
+
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .essential-fade {
     animation-duration: 50ms !important;
     transition-duration: 50ms !important;
@@ -153,7 +153,9 @@
 .a11y-focus-default input:focus,
 .a11y-focus-default textarea:focus,
 .a11y-focus-default select:focus {
-  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary)) !important;
+  box-shadow:
+    0 0 0 2px hsl(var(--background)),
+    0 0 0 4px hsl(var(--primary)) !important;
 }
 
 /* Thick focus indicator style */
@@ -169,7 +171,9 @@
 .a11y-focus-thick input:focus,
 .a11y-focus-thick textarea:focus,
 .a11y-focus-thick select:focus {
-  box-shadow: 0 0 0 4px hsl(var(--background)), 0 0 0 8px hsl(var(--primary)) !important;
+  box-shadow:
+    0 0 0 4px hsl(var(--background)),
+    0 0 0 8px hsl(var(--primary)) !important;
   transform: scale(1.02);
 }
 
@@ -194,18 +198,18 @@
 }
 
 /* Focus indicator for interactive elements */
-.a11y-focus-default [role="button"]:focus,
-.a11y-focus-default [role="link"]:focus,
-.a11y-focus-default [role="menuitem"]:focus,
-.a11y-focus-default [role="tab"]:focus {
+.a11y-focus-default [role='button']:focus,
+.a11y-focus-default [role='link']:focus,
+.a11y-focus-default [role='menuitem']:focus,
+.a11y-focus-default [role='tab']:focus {
   outline: 3px solid hsl(var(--accent)) !important;
   outline-offset: 2px !important;
 }
 
-.a11y-focus-thick [role="button"]:focus,
-.a11y-focus-thick [role="link"]:focus,
-.a11y-focus-thick [role="menuitem"]:focus,
-.a11y-focus-thick [role="tab"]:focus {
+.a11y-focus-thick [role='button']:focus,
+.a11y-focus-thick [role='link']:focus,
+.a11y-focus-thick [role='menuitem']:focus,
+.a11y-focus-thick [role='tab']:focus {
   outline: 5px solid hsl(var(--accent)) !important;
   outline-offset: 3px !important;
 }
@@ -239,14 +243,15 @@
 
 /* Skip focus for decorative elements */
 .a11y-show-focus .decorative:focus,
-.a11y-show-focus [aria-hidden="true"]:focus,
+.a11y-show-focus [aria-hidden='true']:focus,
 .a11y-show-focus .sr-only:focus {
   outline: none !important;
 }
 
 /* Focus indicator animation */
 @keyframes focusPulse {
-  0%, 100% {
+  0%,
+  100% {
     outline-color: hsl(var(--primary));
   }
   50% {

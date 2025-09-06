@@ -1,42 +1,27 @@
 <template>
   <div class="a11y-provider">
     <!-- 主要的无障碍通知器 -->
-    <A11yAnnouncer 
+    <A11yAnnouncer
       :show-debug-info="debugMode"
       :message-duration="announcementDuration"
       :max-history-display="maxHistoryDisplay"
     />
 
     <!-- 跳过链接 (如果启用) -->
-    <div 
-      v-if="accessibilityStore.settings.keyboard.enableSkipLinks"
-      class="skip-links"
-    >
-      <a 
-        href="#main-content"
-        class="skip-link"
-        @click="handleSkipToMain"
-      >
+    <div v-if="accessibilityStore.settings.keyboard.enableSkipLinks" class="skip-links">
+      <a href="#main-content" class="skip-link" @click="handleSkipToMain">
         {{ t('accessibility.navigation.skipToMain') }}
       </a>
-      <a 
-        href="#sidebar"
-        class="skip-link"
-        @click="handleSkipToSidebar"
-      >
+      <a href="#sidebar" class="skip-link" @click="handleSkipToSidebar">
         {{ t('accessibility.navigation.skipToSidebar') }}
       </a>
-      <a 
-        href="#chat-input"
-        class="skip-link"
-        @click="handleSkipToInput"
-      >
+      <a href="#chat-input" class="skip-link" @click="handleSkipToInput">
         {{ t('accessibility.navigation.skipToInput') }}
       </a>
     </div>
 
     <!-- 键盘快捷键帮助 (隐藏但可被屏幕阅读器访问) -->
-    <div 
+    <div
       v-if="accessibilityStore.isKeyboardNavigationEnabled"
       class="sr-only"
       id="keyboard-shortcuts-help"
@@ -46,21 +31,18 @@
       <h2>{{ t('accessibility.shortcuts.shortcutsHelp') }}</h2>
       <ul>
         <li v-for="(shortcut, key) in keyboardShortcuts" :key="key">
-          {{ t('accessibility.shortcuts.shortcutDescription', {
-            keys: shortcut.keys,
-            action: shortcut.description
-          }) }}
+          {{
+            t('accessibility.shortcuts.shortcutDescription', {
+              keys: shortcut.keys,
+              action: shortcut.description
+            })
+          }}
         </li>
       </ul>
     </div>
 
     <!-- 实时状态通知 -->
-    <div
-      class="sr-only"
-      aria-live="polite"
-      aria-atomic="false"
-      role="status"
-    >
+    <div class="sr-only" aria-live="polite" aria-atomic="false" role="status">
       {{ currentStatusMessage }}
     </div>
 
@@ -75,17 +57,10 @@
     </div>
 
     <!-- 外部链接警告 (供 aria-describedby 引用) -->
-    <div id="external-link-warning" class="sr-only">
-      This link opens in a new window
-    </div>
+    <div id="external-link-warning" class="sr-only">This link opens in a new window</div>
 
     <!-- 表单验证消息容器 -->
-    <div 
-      id="form-validation-messages"
-      class="sr-only"
-      aria-live="assertive"
-      role="alert"
-    >
+    <div id="form-validation-messages" class="sr-only" aria-live="assertive" role="alert">
       {{ currentValidationMessage }}
     </div>
 
@@ -179,9 +154,10 @@ function handleSkipToMain(event: Event): void {
  */
 function handleSkipToSidebar(event: Event): void {
   event.preventDefault()
-  const sidebar = document.getElementById('sidebar') || document.querySelector('[data-testid="sidebar"]')
+  const sidebar =
+    document.getElementById('sidebar') || document.querySelector('[data-testid="sidebar"]')
   if (sidebar) {
-    (sidebar as HTMLElement).focus()
+    ;(sidebar as HTMLElement).focus()
     statusFeedback.announceFocusChange(t('accessibility.navigation.focusSidebar'))
   }
 }
@@ -191,11 +167,12 @@ function handleSkipToSidebar(event: Event): void {
  */
 function handleSkipToInput(event: Event): void {
   event.preventDefault()
-  const chatInput = document.getElementById('chat-input') || 
-                   document.querySelector('[data-testid="chat-input"]') ||
-                   document.querySelector('textarea, input[type="text"]')
+  const chatInput =
+    document.getElementById('chat-input') ||
+    document.querySelector('[data-testid="chat-input"]') ||
+    document.querySelector('textarea, input[type="text"]')
   if (chatInput) {
-    (chatInput as HTMLElement).focus()
+    ;(chatInput as HTMLElement).focus()
     statusFeedback.announceFocusChange(t('accessibility.navigation.focusInputField'))
   }
 }
@@ -216,19 +193,30 @@ function handleKeyboardShortcuts(event: KeyboardEvent): void {
   // 检查各种快捷键组合
   const keyCombo = `${ctrlKey ? 'Ctrl+' : ''}${altKey ? 'Alt+' : ''}${metaKey ? 'Cmd+' : ''}${key.toUpperCase()}`
 
-  if (keyCombo === shortcuts.skipToMain.replace('Ctrl', 'Ctrl').replace('Alt', 'Alt').replace('Meta', 'Cmd')) {
+  if (
+    keyCombo ===
+    shortcuts.skipToMain.replace('Ctrl', 'Ctrl').replace('Alt', 'Alt').replace('Meta', 'Cmd')
+  ) {
     event.preventDefault()
     handleSkipToMain(event)
-  } else if (keyCombo === shortcuts.newConversation.replace('Ctrl', 'Ctrl').replace('Alt', 'Alt').replace('Meta', 'Cmd')) {
+  } else if (
+    keyCombo ===
+    shortcuts.newConversation.replace('Ctrl', 'Ctrl').replace('Alt', 'Alt').replace('Meta', 'Cmd')
+  ) {
     event.preventDefault()
     // 触发新对话
     router.push('/')
     announcePolite(t('common.newChat'))
-  } else if (keyCombo === shortcuts.settings.replace('Ctrl', 'Ctrl').replace('Alt', 'Alt').replace('Meta', 'Cmd')) {
+  } else if (
+    keyCombo ===
+    shortcuts.settings.replace('Ctrl', 'Ctrl').replace('Alt', 'Alt').replace('Meta', 'Cmd')
+  ) {
     event.preventDefault()
     router.push('/settings')
     announcePolite(t('accessibility.navigation.focusSettings'))
-  } else if (keyCombo === shortcuts.help.replace('Ctrl', 'Ctrl').replace('Alt', 'Alt').replace('Meta', 'Cmd')) {
+  } else if (
+    keyCombo === shortcuts.help.replace('Ctrl', 'Ctrl').replace('Alt', 'Alt').replace('Meta', 'Cmd')
+  ) {
     event.preventDefault()
     showKeyboardShortcutsHelp()
   }
@@ -244,9 +232,9 @@ function showKeyboardShortcutsHelp(): void {
     helpElement.classList.remove('sr-only')
     helpElement.setAttribute('tabindex', '0')
     helpElement.focus()
-    
+
     announcePolite(t('accessibility.shortcuts.shortcutsHelp'))
-    
+
     // 3秒后隐藏
     setTimeout(() => {
       helpElement.classList.add('sr-only')
@@ -261,7 +249,7 @@ function showKeyboardShortcutsHelp(): void {
 function setNavigationHint(hint: string): void {
   if (props.showNavigationHints && accessibilityStore.isKeyboardNavigationEnabled) {
     currentNavigationHint.value = hint
-    
+
     // 自动清除提示
     setTimeout(() => {
       currentNavigationHint.value = ''
@@ -274,7 +262,7 @@ function setNavigationHint(hint: string): void {
  */
 function setValidationMessage(message: string): void {
   currentValidationMessage.value = message
-  
+
   // 自动清除消息
   setTimeout(() => {
     currentValidationMessage.value = ''
@@ -290,12 +278,12 @@ function initializeA11yEnvironment(): void {
 
   // 设置全局 ARIA 标签
   document.documentElement.setAttribute('lang', 'en') // 可以根据当前语言设置
-  
+
   // 添加屏幕阅读器检测
   if (accessibilityStore.isScreenReaderOptimized) {
     document.body.classList.add('screen-reader-optimized')
   }
-  
+
   // 设置初始导航提示
   if (props.showNavigationHints) {
     setNavigationHint(t('accessibility.shortcuts.shortcutsAvailable'))
@@ -303,49 +291,57 @@ function initializeA11yEnvironment(): void {
 }
 
 // 监听路由变化，播报页面切换
-watch(() => route.path, (newPath, oldPath) => {
-  if (newPath !== oldPath && accessibilityStore.isScreenReaderOptimized) {
-    const pageName = route.name?.toString() || newPath
-    statusFeedback.announceNavigationChange(pageName)
+watch(
+  () => route.path,
+  (newPath, oldPath) => {
+    if (newPath !== oldPath && accessibilityStore.isScreenReaderOptimized) {
+      const pageName = route.name?.toString() || newPath
+      statusFeedback.announceNavigationChange(pageName)
+    }
   }
-})
+)
 
 // 监听连接状态变化
-watch(() => statusFeedback.connectionStatus, (newStatus) => {
-  switch (newStatus) {
-    case 'connected':
-      connectionStatusMessage.value = t('accessibility.status.connected')
-      break
-    case 'disconnected':
-      connectionStatusMessage.value = t('accessibility.status.disconnected')
-      break
-    case 'connecting':
-      connectionStatusMessage.value = t('accessibility.status.connecting')
-      break
-    case 'error':
-      connectionStatusMessage.value = t('accessibility.status.error')
-      break
-  }
-}, { immediate: true })
+watch(
+  () => statusFeedback.connectionStatus,
+  (newStatus) => {
+    switch (newStatus) {
+      case 'connected':
+        connectionStatusMessage.value = t('accessibility.status.connected')
+        break
+      case 'disconnected':
+        connectionStatusMessage.value = t('accessibility.status.disconnected')
+        break
+      case 'connecting':
+        connectionStatusMessage.value = t('accessibility.status.connecting')
+        break
+      case 'error':
+        connectionStatusMessage.value = t('accessibility.status.error')
+        break
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   // 初始化无障碍环境
   initializeA11yEnvironment()
-  
+
   // 添加全局键盘监听器
   document.addEventListener('keydown', handleKeyboardShortcuts)
-  
+
   // 添加全局焦点管理
   if (accessibilityStore.isKeyboardNavigationEnabled) {
     document.addEventListener('focusin', (event) => {
       const target = event.target as HTMLElement
       if (target && target.tagName) {
         const elementType = target.tagName.toLowerCase()
-        const elementLabel = target.getAttribute('aria-label') || 
-                           target.getAttribute('title') || 
-                           target.textContent?.slice(0, 50) || 
-                           elementType
-        
+        const elementLabel =
+          target.getAttribute('aria-label') ||
+          target.getAttribute('title') ||
+          target.textContent?.slice(0, 50) ||
+          elementType
+
         statusFeedback.announceFocusChange(elementType, elementLabel)
       }
     })
@@ -461,7 +457,7 @@ defineExpose({
     color: #fff;
     border-color: #fff;
   }
-  
+
   .skip-link:focus {
     outline: 3px solid #ff0;
     background: #000;

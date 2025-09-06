@@ -37,18 +37,18 @@
     border: 3px solid;
     outline: 3px solid;
   }
-  
+
   .keyboard-focus *:focus,
   .mouse-focus *:focus {
     outline: 3px solid;
     outline-offset: 3px;
   }
-  
+
   /* 确保在高对比度模式下按钮和链接有明显边界 */
-  button, 
-  a, 
-  input, 
-  select, 
+  button,
+  a,
+  input,
+  select,
   textarea {
     border: 1px solid;
   }
@@ -56,8 +56,8 @@
 
 /* 减少动画首选项支持 */
 @media (prefers-reduced-motion: reduce) {
-  *, 
-  *::before, 
+  *,
+  *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -106,7 +106,7 @@
 }
 
 /* 对话框无障碍增强 */
-.dialog-content[role="dialog"] {
+.dialog-content[role='dialog'] {
   max-height: 90vh;
   max-width: 90vw;
   overflow-y: auto;
@@ -124,53 +124,53 @@
 }
 
 /* 状态指示器 */
-[aria-expanded="true"] .expand-icon {
+[aria-expanded='true'] .expand-icon {
   transform: rotate(180deg);
 }
 
-[aria-expanded="false"] .expand-icon {
+[aria-expanded='false'] .expand-icon {
   transform: rotate(0deg);
 }
 
 /* 禁用状态视觉增强 */
-[aria-disabled="true"], 
+[aria-disabled='true'],
 [disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* 选中状态增强 */
-[aria-selected="true"] {
+[aria-selected='true'] {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
 }
 
-[aria-checked="true"]::before {
-  content: "✓";
+[aria-checked='true']::before {
+  content: '✓';
   margin-right: 0.5rem;
 }
 
 /* 错误状态 */
-[aria-invalid="true"] {
+[aria-invalid='true'] {
   border-color: hsl(var(--destructive));
   box-shadow: 0 0 0 1px hsl(var(--destructive));
 }
 
 /* 必填字段指示 */
-[aria-required="true"] label::after {
-  content: " *";
+[aria-required='true'] label::after {
+  content: ' *';
   color: hsl(var(--destructive));
 }
 
 /* 加载状态 */
-[aria-busy="true"] {
+[aria-busy='true'] {
   cursor: wait;
   opacity: 0.7;
 }
 
 /* 实时区域 */
-[aria-live="polite"],
-[aria-live="assertive"] {
+[aria-live='polite'],
+[aria-live='assertive'] {
   position: absolute;
   left: -10000px;
   width: 1px;
@@ -179,7 +179,7 @@
 }
 
 /* 工具提示增强 */
-[role="tooltip"] {
+[role='tooltip'] {
   position: absolute;
   z-index: 10000;
   padding: 0.5rem;
@@ -193,46 +193,46 @@
 }
 
 /* 进度条无障碍增强 */
-[role="progressbar"] {
+[role='progressbar'] {
   overflow: hidden;
   border-radius: 4px;
   background-color: hsl(var(--secondary));
 }
 
-[role="progressbar"]::after {
-  content: attr(aria-valuenow) "% " attr(aria-label);
+[role='progressbar']::after {
+  content: attr(aria-valuenow) '% ' attr(aria-label);
   position: absolute;
   left: -10000px;
 }
 
 /* 标签页无障碍增强 */
-[role="tablist"] {
+[role='tablist'] {
   display: flex;
   border-bottom: 1px solid hsl(var(--border));
 }
 
-[role="tab"] {
+[role='tab'] {
   padding: 0.5rem 1rem;
   cursor: pointer;
   border-bottom: 2px solid transparent;
 }
 
-[role="tab"][aria-selected="true"] {
+[role='tab'][aria-selected='true'] {
   border-bottom-color: hsl(var(--primary));
   background-color: hsl(var(--background));
 }
 
-[role="tab"]:focus {
+[role='tab']:focus {
   outline: 2px solid hsl(var(--ring));
   outline-offset: -2px;
 }
 
-[role="tabpanel"] {
+[role='tabpanel'] {
   padding: 1rem;
   min-height: 200px;
 }
 
-[role="tabpanel"]:focus {
+[role='tabpanel']:focus {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }

@@ -39,35 +39,35 @@ const REDUCED_ANIMATIONS: Record<string, AnimationConfig> = {
 
 export function useReducedMotion() {
   const accessibilityStore = useAccessibilityStore()
-  
+
   // System preference for reduced motion
   const systemPrefersReducedMotion = ref(false)
-  
+
   // Media query for reduced motion
   let mediaQuery: MediaQueryList | null = null
-  
+
   // Current motion preference
   const motionPreference = computed<MotionPreference>(() => ({
     reducedMotion: accessibilityStore.isReducedMotionEnabled,
     systemPreference: systemPrefersReducedMotion.value,
     userOverride: accessibilityStore.isReducedMotionEnabled && !systemPrefersReducedMotion.value
   }))
-  
+
   // Whether animations should be reduced
-  const shouldReduceMotion = computed(() => 
-    accessibilityStore.isReducedMotionEnabled || systemPrefersReducedMotion.value
+  const shouldReduceMotion = computed(
+    () => accessibilityStore.isReducedMotionEnabled || systemPrefersReducedMotion.value
   )
-  
+
   // Current animation configuration
-  const animationConfig = computed(() => 
+  const animationConfig = computed(() =>
     shouldReduceMotion.value ? REDUCED_ANIMATIONS : DEFAULT_ANIMATIONS
   )
-  
+
   // Get animation settings for a specific type
   const getAnimation = (type: keyof typeof DEFAULT_ANIMATIONS): AnimationConfig => {
     return animationConfig.value[type] || DEFAULT_ANIMATIONS.normal
   }
-  
+
   // Create transition string for CSS
   const createTransition = (
     property: string = 'all',
@@ -75,14 +75,14 @@ export function useReducedMotion() {
   ): string => {
     const config = getAnimation(type)
     if (!config.enabled) return 'none'
-    
+
     return `${property} ${config.duration}ms ${config.easing}`
   }
-  
+
   // Apply reduced motion settings to DOM
   const applyReducedMotionSettings = (enabled: boolean) => {
     const root = document.documentElement
-    
+
     if (enabled) {
       root.classList.add('a11y-reduced-motion')
       root.style.setProperty('--motion-duration-fast', '0ms')
@@ -96,26 +96,26 @@ export function useReducedMotion() {
       root.style.setProperty('--motion-duration-slow', '500ms')
       root.style.setProperty('--motion-easing', 'ease-in-out')
     }
-    
+
     // Dispatch custom event for components to listen to
     const event = new CustomEvent('motion-preference-changed', {
       detail: { reducedMotion: enabled }
     })
     document.dispatchEvent(event)
   }
-  
+
   // Toggle reduced motion setting
   const toggleReducedMotion = async () => {
     const newValue = !accessibilityStore.isReducedMotionEnabled
     await accessibilityStore.updateVisualSettings({ reducedMotion: newValue })
-    
+
     // Announce change to screen readers
     accessibilityStore.announceMessage(
       newValue ? 'Reduced motion enabled' : 'Reduced motion disabled',
       'polite'
     )
   }
-  
+
   // Enable reduced motion
   const enableReducedMotion = async () => {
     if (!accessibilityStore.isReducedMotionEnabled) {
@@ -123,7 +123,7 @@ export function useReducedMotion() {
       accessibilityStore.announceMessage('Reduced motion enabled', 'polite')
     }
   }
-  
+
   // Disable reduced motion
   const disableReducedMotion = async () => {
     if (accessibilityStore.isReducedMotionEnabled) {
@@ -131,16 +131,16 @@ export function useReducedMotion() {
       accessibilityStore.announceMessage('Reduced motion disabled', 'polite')
     }
   }
-  
+
   // Check if a specific animation should be played
   const shouldAnimate = (type?: keyof typeof DEFAULT_ANIMATIONS): boolean => {
     if (shouldReduceMotion.value) return false
     if (!type) return true
-    
+
     const config = getAnimation(type)
     return config.enabled && config.duration > 0
   }
-  
+
   // Get safe animation duration (respects reduced motion)
   const getSafeDuration = (
     normalDuration: number,
@@ -151,10 +151,10 @@ export function useReducedMotion() {
       if (type === 'fade') return Math.min(normalDuration, 50)
       return 0
     }
-    
+
     return normalDuration
   }
-  
+
   // Create a CSS animation object that respects motion preferences
   const createSafeAnimation = (
     keyframes: Keyframe[],
@@ -162,7 +162,7 @@ export function useReducedMotion() {
   ): KeyframeAnimationOptions => {
     const { type = 'normal', ...animationOptions } = options
     const config = getAnimation(type)
-    
+
     return {
       ...animationOptions,
       duration: config.duration,
@@ -170,7 +170,7 @@ export function useReducedMotion() {
       fill: animationOptions.fill || 'both'
     }
   }
-  
+
   // Wrap Web Animations API with motion preference awareness
   const safeAnimate = (
     element: Element,
@@ -185,11 +185,11 @@ export function useReducedMotion() {
       }
       return null
     }
-    
+
     const safeOptions = createSafeAnimation(keyframes, options)
     return element.animate(keyframes, safeOptions)
   }
-  
+
   // Create CSS transition with motion preference awareness
   const safeTransition = (
     element: HTMLElement,
@@ -199,17 +199,17 @@ export function useReducedMotion() {
     const transition = createTransition(property, type)
     element.style.transition = transition
   }
-  
+
   // Handle system preference changes
   const handleSystemPreferenceChange = (event: MediaQueryListEvent) => {
     systemPrefersReducedMotion.value = event.matches
-    
+
     // Apply system preference if user hasn't overridden
     if (!accessibilityStore.settings.visual.reducedMotion) {
       applyReducedMotionSettings(event.matches)
     }
   }
-  
+
   // Get motion preference info for display
   const getMotionPreferenceInfo = () => ({
     current: motionPreference.value,
@@ -217,7 +217,7 @@ export function useReducedMotion() {
     animations: animationConfig.value,
     system: systemPrefersReducedMotion.value
   })
-  
+
   // Preload critical CSS for reduced motion
   const _preloadReducedMotionCSS = () => {
     const style = document.createElement('style')
@@ -231,13 +231,13 @@ export function useReducedMotion() {
     `
     document.head.appendChild(style)
   }
-  
+
   // Initialize media query listener
   const initializeMediaQuery = () => {
     try {
       mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
       systemPrefersReducedMotion.value = mediaQuery.matches
-      
+
       // Listen for changes
       if (mediaQuery.addEventListener) {
         mediaQuery.addEventListener('change', handleSystemPreferenceChange)
@@ -249,7 +249,7 @@ export function useReducedMotion() {
       console.warn('Could not initialize reduced motion media query:', error)
     }
   }
-  
+
   // Cleanup media query listener
   const cleanupMediaQuery = () => {
     if (mediaQuery) {
@@ -261,7 +261,7 @@ export function useReducedMotion() {
       }
     }
   }
-  
+
   // Watch for changes in accessibility store settings
   watch(
     () => accessibilityStore.isReducedMotionEnabled,
@@ -270,29 +270,29 @@ export function useReducedMotion() {
     },
     { immediate: true }
   )
-  
+
   // Setup and cleanup
   onMounted(() => {
     initializeMediaQuery()
     applyReducedMotionSettings(shouldReduceMotion.value)
   })
-  
+
   onUnmounted(() => {
     cleanupMediaQuery()
   })
-  
+
   return {
     // State
     motionPreference,
     shouldReduceMotion,
     systemPrefersReducedMotion,
     animationConfig,
-    
+
     // Actions
     toggleReducedMotion,
     enableReducedMotion,
     disableReducedMotion,
-    
+
     // Animation utilities
     getAnimation,
     createTransition,
@@ -301,10 +301,10 @@ export function useReducedMotion() {
     createSafeAnimation,
     safeAnimate,
     safeTransition,
-    
+
     // Information
     getMotionPreferenceInfo,
-    
+
     // Constants
     DEFAULT_ANIMATIONS,
     REDUCED_ANIMATIONS

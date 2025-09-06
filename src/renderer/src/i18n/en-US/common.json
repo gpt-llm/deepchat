@@ -87,7 +87,7 @@
     },
     "navigation": {
       "skipToMain": "Skip to main content",
-      "skipToSidebar": "Skip to sidebar", 
+      "skipToSidebar": "Skip to sidebar",
       "skipToInput": "Skip to input",
       "focusMessageList": "Focus on message list",
       "focusSidebar": "Focus on sidebar",
@@ -101,7 +101,7 @@
     },
     "status": {
       "connected": "Connected",
-      "disconnected": "Disconnected", 
+      "disconnected": "Disconnected",
       "connecting": "Connecting",
       "error": "Connection error"
     }

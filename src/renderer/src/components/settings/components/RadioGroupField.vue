@@ -3,19 +3,15 @@
     <Label class="text-sm font-medium">
       {{ label }}
     </Label>
-    
-    <RadioGroup 
+
+    <RadioGroup
       :model-value="modelValue"
       @update:model-value="$emit('update:modelValue', $event)"
       :disabled="disabled"
       class="flex flex-wrap gap-4"
       :aria-label="label"
     >
-      <div
-        v-for="option in options"
-        :key="option.value"
-        class="flex items-center space-x-2"
-      >
+      <div v-for="option in options" :key="option.value" class="flex items-center space-x-2">
         <RadioGroupItem
           :value="option.value"
           :id="`${fieldId}-${option.value}`"
@@ -30,7 +26,7 @@
         </Label>
       </div>
     </RadioGroup>
-    
+
     <p v-if="description" class="text-xs text-muted-foreground">
       {{ description }}
     </p>
@@ -62,8 +58,9 @@ defineEmits<{
 }>()
 
 // Generate unique ID for accessibility
-const fieldId = computed(() => 
-  `radio-group-${props.label.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9)}`
+const fieldId = computed(
+  () =>
+    `radio-group-${props.label.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9)}`
 )
 </script>
 

@@ -1,15 +1,12 @@
 <template>
-  <div 
+  <div
     class="prose prose-sm dark:prose-invert w-full max-w-none break-all a11y-markdown-wrapper"
     :aria-label="markdownContentLabel"
     role="document"
     tabindex="0"
   >
     <!-- 屏幕阅读器专用的内容摘要 -->
-    <div 
-      class="sr-only"
-      aria-live="polite"
-    >
+    <div class="sr-only" aria-live="polite">
       {{ contentSummary }}
     </div>
 
@@ -55,7 +52,8 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const artifactStore = useArtifactStore()
-const { formatMixedContentForScreenReader, formatCodeBlockForScreenReader } = useScreenReaderContent()
+const { formatMixedContentForScreenReader, formatCodeBlockForScreenReader } =
+  useScreenReaderContent()
 const { announcePolite } = useA11yAnnouncement()
 
 // 生成唯一的 message ID 和 thread ID
@@ -67,7 +65,7 @@ const threadId = `a11y-md-thread-${nanoid()}`
  */
 const contentSummary = computed(() => {
   if (!props.provideSummary || !props.content) return ''
-  
+
   try {
     return formatMixedContentForScreenReader(props.content)
   } catch (error) {
@@ -87,51 +85,55 @@ const markdownContentLabel = computed(() => {
  * 增强的代码块组件，包含无障碍支持
  */
 const A11yCodeBlock = (props: any) => {
-  return h('div', {
-    role: 'region',
-    'aria-label': t('accessibility.content.codeBlockStart'),
-    class: 'a11y-code-block-wrapper'
-  }, [
-    // 屏幕阅读器专用的代码描述
-    h('div', {
-      class: 'sr-only',
-      'aria-live': 'polite'
-    }, formatCodeBlockForScreenReader(
-      props.node?.code || '', 
-      props.language,
-      true
-    )),
-    
-    // 原始代码块组件
-    h(CodeBlockNode, {
-      ...props,
-      // 添加无障碍属性
-      'aria-label': props.language 
-        ? t('accessibility.content.codeLanguage', { language: props.language })
-        : t('accessibility.content.codeBlockStart'),
-      role: 'code',
-      tabindex: 0,
-      onPreviewCode(v) {
-        // 通知屏幕阅读器代码块被预览
-        if (props.announceChanges) {
-          announcePolite(`Code preview opened for ${v.language || 'code'} block`)
+  return h(
+    'div',
+    {
+      role: 'region',
+      'aria-label': t('accessibility.content.codeBlockStart'),
+      class: 'a11y-code-block-wrapper'
+    },
+    [
+      // 屏幕阅读器专用的代码描述
+      h(
+        'div',
+        {
+          class: 'sr-only',
+          'aria-live': 'polite'
+        },
+        formatCodeBlockForScreenReader(props.node?.code || '', props.language, true)
+      ),
+
+      // 原始代码块组件
+      h(CodeBlockNode, {
+        ...props,
+        // 添加无障碍属性
+        'aria-label': props.language
+          ? t('accessibility.content.codeLanguage', { language: props.language })
+          : t('accessibility.content.codeBlockStart'),
+        role: 'code',
+        tabindex: 0,
+        onPreviewCode(v) {
+          // 通知屏幕阅读器代码块被预览
+          if (props.announceChanges) {
+            announcePolite(`Code preview opened for ${v.language || 'code'} block`)
+          }
+
+          artifactStore.showArtifact(
+            {
+              id: v.id,
+              type: v.artifactType,
+              title: v.artifactTitle,
+              language: v.language,
+              content: v.node.code,
+              status: 'loaded'
+            },
+            messageId,
+            threadId
+          )
         }
-        
-        artifactStore.showArtifact(
-          {
-            id: v.id,
-            type: v.artifactType,
-            title: v.artifactTitle,
-            language: v.language,
-            content: v.node.code,
-            status: 'loaded'
-          },
-          messageId,
-          threadId
-        )
-      }
-    })
-  ])
+      })
+    ]
+  )
 }
 
 /**
@@ -140,18 +142,22 @@ const A11yCodeBlock = (props: any) => {
 const A11yLink = (props: any) => {
   const href = props.href || ''
   const text = props.children?.[0] || href
-  
-  return h('a', {
-    ...props,
-    'aria-label': `Link: ${text}${href.startsWith('http') ? ' (external)' : ''}`,
-    role: 'link',
-    // 为外部链接添加警告
-    ...(href.startsWith('http') && {
-      target: '_blank',
-      rel: 'noopener noreferrer',
-      'aria-describedby': 'external-link-warning'
-    })
-  }, props.children)
+
+  return h(
+    'a',
+    {
+      ...props,
+      'aria-label': `Link: ${text}${href.startsWith('http') ? ' (external)' : ''}`,
+      role: 'link',
+      // 为外部链接添加警告
+      ...(href.startsWith('http') && {
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        'aria-describedby': 'external-link-warning'
+      })
+    },
+    props.children
+  )
 }
 
 /**
@@ -168,9 +174,10 @@ const A11yImage = (props: any) => {
       alt: ''
     }),
     // 为有意义的图片提供更详细的描述
-    ...(props.alt && props.alt.trim() && {
-      'aria-describedby': `img-desc-${nanoid()}`
-    })
+    ...(props.alt &&
+      props.alt.trim() && {
+        'aria-describedby': `img-desc-${nanoid()}`
+      })
   })
 }
 
@@ -178,19 +185,27 @@ const A11yImage = (props: any) => {
  * 增强的表格组件，包含无障碍支持
  */
 const A11yTable = (props: any) => {
-  return h('div', {
-    role: 'region',
-    'aria-label': 'Table',
-    class: 'a11y-table-wrapper',
-    tabindex: 0
-  }, [
-    h('table', {
-      ...props,
-      role: 'table',
-      'aria-label': 'Data table',
-      class: `${props.class || ''} a11y-table`
-    }, props.children)
-  ])
+  return h(
+    'div',
+    {
+      role: 'region',
+      'aria-label': 'Table',
+      class: 'a11y-table-wrapper',
+      tabindex: 0
+    },
+    [
+      h(
+        'table',
+        {
+          ...props,
+          role: 'table',
+          'aria-label': 'Data table',
+          class: `${props.class || ''} a11y-table`
+        },
+        props.children
+      )
+    ]
+  )
 }
 
 /**
@@ -198,21 +213,29 @@ const A11yTable = (props: any) => {
  */
 const A11yList = (props: any, listType: 'ul' | 'ol') => {
   const itemCount = props.children?.length || 0
-  
-  return h(listType, {
-    ...props,
-    role: 'list',
-    'aria-label': `${listType === 'ol' ? 'Ordered' : 'Unordered'} list with ${itemCount} items`,
-    class: `${props.class || ''} a11y-list`
-  }, props.children?.map((child: any, index: number) => 
-    h('li', {
-      ...child.props,
-      role: 'listitem',
-      'aria-setsize': itemCount,
-      'aria-posinset': index + 1,
-      class: `${child.props?.class || ''} a11y-list-item`
-    }, child.children)
-  ))
+
+  return h(
+    listType,
+    {
+      ...props,
+      role: 'list',
+      'aria-label': `${listType === 'ol' ? 'Ordered' : 'Unordered'} list with ${itemCount} items`,
+      class: `${props.class || ''} a11y-list`
+    },
+    props.children?.map((child: any, index: number) =>
+      h(
+        'li',
+        {
+          ...child.props,
+          role: 'listitem',
+          'aria-setsize': itemCount,
+          'aria-posinset': index + 1,
+          class: `${child.props?.class || ''} a11y-list-item`
+        },
+        child.children
+      )
+    )
+  )
 }
 
 /**
@@ -220,38 +243,54 @@ const A11yList = (props: any, listType: 'ul' | 'ol') => {
  */
 const A11yHeading = (props: any, level: number) => {
   const headingTag = `h${level}` as keyof HTMLElementTagNameMap
-  
-  return h(headingTag, {
-    ...props,
-    role: 'heading',
-    'aria-level': level,
-    'aria-label': `Heading level ${level}: ${props.children?.[0] || ''}`,
-    class: `${props.class || ''} a11y-heading`,
-    // 添加跳转锚点
-    id: props.id || `heading-${nanoid()}`,
-    tabindex: 0
-  }, props.children)
+
+  return h(
+    headingTag,
+    {
+      ...props,
+      role: 'heading',
+      'aria-level': level,
+      'aria-label': `Heading level ${level}: ${props.children?.[0] || ''}`,
+      class: `${props.class || ''} a11y-heading`,
+      // 添加跳转锚点
+      id: props.id || `heading-${nanoid()}`,
+      tabindex: 0
+    },
+    props.children
+  )
 }
 
 /**
  * 增强的引用块组件，包含无障碍支持
  */
 const A11yBlockquote = (props: any) => {
-  return h('blockquote', {
-    ...props,
-    role: 'blockquote',
-    'aria-label': 'Quote',
-    class: `${props.class || ''} a11y-blockquote`,
-    tabindex: 0
-  }, [
-    h('div', {
-      class: 'sr-only'
-    }, t('accessibility.content.blockquoteStart')),
-    ...props.children,
-    h('div', {
-      class: 'sr-only'
-    }, t('accessibility.content.blockquoteEnd'))
-  ])
+  return h(
+    'blockquote',
+    {
+      ...props,
+      role: 'blockquote',
+      'aria-label': 'Quote',
+      class: `${props.class || ''} a11y-blockquote`,
+      tabindex: 0
+    },
+    [
+      h(
+        'div',
+        {
+          class: 'sr-only'
+        },
+        t('accessibility.content.blockquoteStart')
+      ),
+      ...props.children,
+      h(
+        'div',
+        {
+          class: 'sr-only'
+        },
+        t('accessibility.content.blockquoteEnd')
+      )
+    ]
+  )
 }
 
 /**
@@ -259,24 +298,24 @@ const A11yBlockquote = (props: any) => {
  */
 const enhancedNodeComponents = computed(() => ({
   reference: ReferenceNode,
-  
+
   // 代码块增强
   code_block: A11yCodeBlock,
   pre: A11yCodeBlock,
-  
+
   // 链接增强
   a: A11yLink,
-  
+
   // 图片增强
   img: A11yImage,
-  
+
   // 表格增强
   table: A11yTable,
-  
+
   // 列表增强
   ul: (props: any) => A11yList(props, 'ul'),
   ol: (props: any) => A11yList(props, 'ol'),
-  
+
   // 标题增强
   h1: (props: any) => A11yHeading(props, 1),
   h2: (props: any) => A11yHeading(props, 2),
@@ -284,20 +323,24 @@ const enhancedNodeComponents = computed(() => ({
   h4: (props: any) => A11yHeading(props, 4),
   h5: (props: any) => A11yHeading(props, 5),
   h6: (props: any) => A11yHeading(props, 6),
-  
+
   // 引用块增强
   blockquote: A11yBlockquote
 }))
 
 // 监听内容变化，通知屏幕阅读器
-watch(() => props.content, (newContent, oldContent) => {
-  if (props.announceChanges && newContent !== oldContent) {
-    if (newContent.length > oldContent.length) {
-      // 内容增加
-      announcePolite(t('accessibility.messages.messageComplete'))
+watch(
+  () => props.content,
+  (newContent, oldContent) => {
+    if (props.announceChanges && newContent !== oldContent) {
+      if (newContent.length > oldContent.length) {
+        // 内容增加
+        announcePolite(t('accessibility.messages.messageComplete'))
+      }
     }
-  }
-}, { immediate: false })
+  },
+  { immediate: false }
+)
 </script>
 
 <style scoped>
@@ -447,7 +490,7 @@ watch(() => props.content, (newContent, oldContent) => {
     --color-text: #000;
     --color-background: #fff;
   }
-  
+
   .dark .a11y-markdown-wrapper {
     --color-border: #fff;
     --color-text: #fff;

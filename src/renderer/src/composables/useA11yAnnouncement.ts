@@ -40,19 +40,19 @@ function generateAnnouncementId(): string {
 
 /**
  * 无障碍通知系统组合式函数
- * 
+ *
  * 提供屏幕阅读器友好的通知API，支持不同优先级的通知模式
- * 
+ *
  * @example
  * ```typescript
  * const { announce, announcePolite, announceAssertive } = useA11yAnnouncement()
- * 
+ *
  * // 礼貌模式通知（等待用户空闲时读取）
  * announcePolite('消息已发送')
- * 
+ *
  * // 强制模式通知（立即打断并读取）
  * announceAssertive('连接失败，请检查网络')
- * 
+ *
  * // 自定义优先级
  * announce('正在生成回复...', 'polite')
  * ```
@@ -64,7 +64,10 @@ export function useA11yAnnouncement() {
    * @param priority 通知优先级
    * @returns 通知对象
    */
-  function announce(message: string, priority: 'polite' | 'assertive' = 'polite'): A11yAnnouncement {
+  function announce(
+    message: string,
+    priority: 'polite' | 'assertive' = 'polite'
+  ): A11yAnnouncement {
     if (!message.trim()) {
       console.warn('[A11y] Cannot announce empty message')
       return {
@@ -96,7 +99,7 @@ export function useA11yAnnouncement() {
     activeAnnouncements.value.set(announcement.id, announcement)
 
     // 通知所有监听器
-    announcementListeners.forEach(listener => {
+    announcementListeners.forEach((listener) => {
       try {
         listener(announcement)
       } catch (error) {
@@ -170,7 +173,7 @@ export function useA11yAnnouncement() {
     }
 
     // 同时更新历史记录中的状态
-    const historyItem = announcementHistory.value.find(item => item.id === announcementId)
+    const historyItem = announcementHistory.value.find((item) => item.id === announcementId)
     if (historyItem) {
       historyItem.announced = true
     }
@@ -180,7 +183,7 @@ export function useA11yAnnouncement() {
    * 检查是否有未播报的通知
    */
   function hasUnnouncedMessages(): boolean {
-    return Array.from(activeAnnouncements.value.values()).some(a => !a.announced)
+    return Array.from(activeAnnouncements.value.values()).some((a) => !a.announced)
   }
 
   /**
@@ -190,12 +193,12 @@ export function useA11yAnnouncement() {
    * @param delay 延迟时间（毫秒），默认使用nextTick
    */
   async function announceDelayed(
-    message: string, 
+    message: string,
     priority: 'polite' | 'assertive' = 'polite',
     delay?: number
   ): Promise<A11yAnnouncement> {
     if (delay) {
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
     } else {
       await nextTick()
     }
@@ -208,18 +211,18 @@ export function useA11yAnnouncement() {
     announcePolite,
     announceAssertive,
     announceDelayed,
-    
+
     // 监听器管理
     addAnnouncementListener,
-    
+
     // 状态管理
     clearActiveAnnouncements,
     markAnnounced,
     hasUnnouncedMessages,
-    
+
     // 历史记录
     getAnnouncementHistory,
-    
+
     // 响应式数据（只读）
     activeAnnouncements: readonly(activeAnnouncements),
     announcementHistory: readonly(announcementHistory)

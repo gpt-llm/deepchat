@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 
 /**
  * 屏幕阅读器内容优化组合式函数
- * 
+ *
  * 提供专门针对屏幕阅读器优化的内容格式化功能
  * 包括代码块描述、链接说明、表格描述等
  */
@@ -18,36 +18,39 @@ export function useScreenReaderContent() {
    * @returns 格式化后的代码描述
    */
   function formatCodeBlockForScreenReader(
-    code: string, 
-    language?: string, 
+    code: string,
+    language?: string,
     lineNumbers: boolean = false
   ): string {
     const lines = code.split('\n')
     const totalLines = lines.length
-    
+
     let description = t('accessibility.content.codeBlockStart')
-    
+
     if (language) {
       description += '. ' + t('accessibility.content.codeLanguage', { language })
     }
-    
+
     description += `. ${totalLines} lines of code.`
-    
+
     if (lineNumbers && totalLines <= 20) {
       // 对于较短的代码块，提供逐行描述
-      const lineDescriptions = lines.map((line, index) => {
-        if (line.trim() === '') return `${t('accessibility.content.codeLineNumber', { number: index + 1 })}: empty line`
-        return `${t('accessibility.content.codeLineNumber', { number: index + 1 })}: ${line.trim()}`
-      }).join('. ')
-      
+      const lineDescriptions = lines
+        .map((line, index) => {
+          if (line.trim() === '')
+            return `${t('accessibility.content.codeLineNumber', { number: index + 1 })}: empty line`
+          return `${t('accessibility.content.codeLineNumber', { number: index + 1 })}: ${line.trim()}`
+        })
+        .join('. ')
+
       description += '. ' + lineDescriptions
     } else {
       // 对于较长的代码块，只提供概要
       description += '. ' + code.replace(/\s+/g, ' ').trim()
     }
-    
+
     description += '. ' + t('accessibility.content.codeBlockEnd')
-    
+
     return description
   }
 
@@ -60,7 +63,7 @@ export function useScreenReaderContent() {
   function formatLinkForScreenReader(href: string, text?: string): string {
     const linkText = text || href
     let description = t('accessibility.content.linkDescription', { text: linkText })
-    
+
     // 检测链接类型并提供额外上下文
     if (href.startsWith('mailto:')) {
       description += '. Email link'
@@ -83,7 +86,7 @@ export function useScreenReaderContent() {
     } else if (href.match(/\.(jpg|jpeg|png|gif|svg|webp)$/i)) {
       description += '. Image link'
     }
-    
+
     return description
   }
 
@@ -96,7 +99,7 @@ export function useScreenReaderContent() {
    */
   function formatImageForScreenReader(src: string, alt?: string, caption?: string): string {
     let description = ''
-    
+
     if (alt && alt.trim()) {
       description = t('accessibility.content.imageDescription', { alt })
     } else {
@@ -112,11 +115,11 @@ export function useScreenReaderContent() {
         description = t('accessibility.content.imageDescription', { alt: 'Unlabeled image' })
       }
     }
-    
+
     if (caption) {
       description += `. Caption: ${caption}`
     }
-    
+
     // 检测图片类型
     if (src.includes('.svg')) {
       description += '. Vector graphic'
@@ -129,7 +132,7 @@ export function useScreenReaderContent() {
     } else if (src.includes('.webp')) {
       description += '. WebP image'
     }
-    
+
     return description
   }
 
@@ -143,28 +146,30 @@ export function useScreenReaderContent() {
     const parser = new DOMParser()
     const doc = parser.parseFromString(tableHtml, 'text/html')
     const table = doc.querySelector('table')
-    
+
     if (!table) return 'Table content'
-    
+
     const rows = table.querySelectorAll('tr')
     const firstRow = rows[0]
     const columns = firstRow?.querySelectorAll('td, th').length || 0
     const rowCount = rows.length
-    
-    let description = t('accessibility.content.tableDescription', { 
-      rows: rowCount, 
-      columns 
+
+    let description = t('accessibility.content.tableDescription', {
+      rows: rowCount,
+      columns
     })
-    
+
     // 检查是否有表头
     const headers = table.querySelectorAll('th')
     if (headers.length > 0) {
-      const headerTexts = Array.from(headers).map(th => th.textContent?.trim()).filter(Boolean)
+      const headerTexts = Array.from(headers)
+        .map((th) => th.textContent?.trim())
+        .filter(Boolean)
       if (headerTexts.length > 0) {
         description += `. Headers: ${headerTexts.join(', ')}`
       }
     }
-    
+
     // 对于小表格，提供内容摘要
     if (rowCount <= 5 && columns <= 4) {
       const cellContents: string[] = []
@@ -177,12 +182,12 @@ export function useScreenReaderContent() {
           }
         })
       })
-      
+
       if (cellContents.length > 0) {
         description += '. Content: ' + cellContents.join('. ')
       }
     }
-    
+
     return description
   }
 
@@ -196,15 +201,15 @@ export function useScreenReaderContent() {
     const parser = new DOMParser()
     const doc = parser.parseFromString(listHtml, 'text/html')
     const list = doc.querySelector(listType)
-    
+
     if (!list) return 'List content'
-    
+
     const items = list.querySelectorAll('li')
     const itemCount = items.length
-    
+
     let description = t('accessibility.content.listStart')
     description += `. ${itemCount} items.`
-    
+
     // 为每个列表项提供描述
     items.forEach((item, index) => {
       const content = item.textContent?.trim()
@@ -213,9 +218,9 @@ export function useScreenReaderContent() {
         description += ` ${itemDesc}: ${content}.`
       }
     })
-    
+
     description += ' ' + t('accessibility.content.listEnd')
-    
+
     return description
   }
 
@@ -228,13 +233,13 @@ export function useScreenReaderContent() {
   function formatBlockquoteForScreenReader(content: string, citation?: string): string {
     let description = t('accessibility.content.blockquoteStart')
     description += `. ${content.trim()}`
-    
+
     if (citation) {
       description += `. Citation: ${citation}`
     }
-    
+
     description += '. ' + t('accessibility.content.blockquoteEnd')
-    
+
     return description
   }
 
@@ -256,7 +261,7 @@ export function useScreenReaderContent() {
    */
   function formatMathForScreenReader(mathContent: string): string {
     let description = t('accessibility.content.mathExpression')
-    
+
     // 简单的数学符号替换，提供更好的语义
     let readableContent = mathContent
       .replace(/\+/g, ' plus ')
@@ -268,9 +273,9 @@ export function useScreenReaderContent() {
       .replace(/sqrt/g, ' square root of ')
       .replace(/sum/g, ' sum ')
       .replace(/integral/g, ' integral ')
-    
+
     description += `: ${readableContent}`
-    
+
     return description
   }
 
@@ -282,9 +287,9 @@ export function useScreenReaderContent() {
   function formatMixedContentForScreenReader(htmlContent: string): string {
     const parser = new DOMParser()
     const doc = parser.parseFromHTML(htmlContent, 'text/html')
-    
+
     const descriptions: string[] = []
-    
+
     // 检测各种内容类型
     const codeBlocks = doc.querySelectorAll('pre, code')
     const links = doc.querySelectorAll('a[href]')
@@ -293,39 +298,39 @@ export function useScreenReaderContent() {
     const lists = doc.querySelectorAll('ul, ol')
     const blockquotes = doc.querySelectorAll('blockquote')
     const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6')
-    
+
     if (codeBlocks.length > 0) {
       descriptions.push(`${codeBlocks.length} code blocks`)
     }
-    
+
     if (links.length > 0) {
       descriptions.push(`${links.length} links`)
     }
-    
+
     if (images.length > 0) {
       descriptions.push(`${images.length} images`)
     }
-    
+
     if (tables.length > 0) {
       descriptions.push(`${tables.length} tables`)
     }
-    
+
     if (lists.length > 0) {
       descriptions.push(`${lists.length} lists`)
     }
-    
+
     if (blockquotes.length > 0) {
       descriptions.push(`${blockquotes.length} quotes`)
     }
-    
+
     if (headings.length > 0) {
       descriptions.push(`${headings.length} headings`)
     }
-    
+
     if (descriptions.length > 0) {
       return `Content contains: ${descriptions.join(', ')}`
     }
-    
+
     return t('accessibility.content.plainText')
   }
 
@@ -338,11 +343,11 @@ export function useScreenReaderContent() {
     // 创建临时DOM元素来提取文本
     const temp = document.createElement('div')
     temp.innerHTML = htmlContent
-    
+
     // 移除脚本和样式标签
     const scripts = temp.querySelectorAll('script, style')
-    scripts.forEach(element => element.remove())
-    
+    scripts.forEach((element) => element.remove())
+
     // 返回纯文本内容
     return temp.textContent || temp.innerText || ''
   }

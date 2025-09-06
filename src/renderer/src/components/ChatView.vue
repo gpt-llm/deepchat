@@ -1,21 +1,21 @@
 <template>
   <!-- Skip to main content link -->
-  <a 
-    href="#main-chat-area" 
+  <a
+    href="#main-chat-area"
     class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:text-sm"
   >
     {{ $t('chat.skipToMainContent') }}
   </a>
-  <div 
+  <div
     id="main-chat-area"
-    class="flex flex-col overflow-hidden h-0 flex-1" 
-    role="main" 
+    class="flex flex-col overflow-hidden h-0 flex-1"
+    role="main"
     :aria-label="$t('chat.chatConversation')"
   >
     <!-- 消息列表区域 -->
-    <div 
-      role="log" 
-      aria-live="polite" 
+    <div
+      role="log"
+      aria-live="polite"
       :aria-label="$t('chat.messageHistory')"
       class="flex-1 overflow-hidden"
     >

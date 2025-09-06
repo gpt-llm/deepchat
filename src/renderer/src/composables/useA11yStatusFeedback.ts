@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 
 /**
  * 状态更新语音反馈系统
- * 
+ *
  * 监听应用中的各种状态变化，为屏幕阅读器用户提供实时的语音反馈
  * 包括消息生成状态、连接状态、操作完成通知等
  */
@@ -27,17 +27,16 @@ export function useA11yStatusFeedback() {
   /**
    * 检查是否应该播报状态更新
    */
-  const shouldAnnounceStatus = computed(() => 
-    accessibilityStore.isScreenReaderOptimized && 
-    accessibilityStore.settings.screenReader.announceNewMessages
+  const shouldAnnounceStatus = computed(
+    () =>
+      accessibilityStore.isScreenReaderOptimized &&
+      accessibilityStore.settings.screenReader.announceNewMessages
   )
 
   /**
    * 检查是否应该播放音频反馈
    */
-  const shouldPlaySoundFeedback = computed(() =>
-    accessibilityStore.settings.audio.soundFeedback
-  )
+  const shouldPlaySoundFeedback = computed(() => accessibilityStore.settings.audio.soundFeedback)
 
   /**
    * 播报消息生成开始
@@ -46,7 +45,7 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     announcePolite(t('accessibility.messages.messageLoading'))
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('info')
     }
@@ -59,7 +58,7 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     announcePolite(t('accessibility.messages.messageComplete'))
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('success')
     }
@@ -71,12 +70,12 @@ export function useA11yStatusFeedback() {
   function announceGenerationError(threadId: string, error?: string): void {
     if (!shouldAnnounceStatus.value) return
 
-    const message = error 
+    const message = error
       ? `${t('accessibility.messages.messageFailed')}: ${error}`
       : t('accessibility.messages.messageFailed')
-    
+
     announceAssertive(message)
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('error')
     }
@@ -89,7 +88,7 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     announcePolite(t('accessibility.messages.messageSent'))
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('success')
     }
@@ -102,7 +101,7 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     announcePolite(t('accessibility.messages.messageDeleted'))
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('info')
     }
@@ -115,7 +114,7 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     announcePolite(t('accessibility.messages.messageCopied'))
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('success')
     }
@@ -152,7 +151,7 @@ export function useA11yStatusFeedback() {
     }
 
     announce(message, priority)
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback(soundType)
     }
@@ -161,7 +160,10 @@ export function useA11yStatusFeedback() {
   /**
    * 播报工具调用状态
    */
-  function announceToolCallStatus(status: 'executing' | 'completed' | 'failed', toolName?: string): void {
+  function announceToolCallStatus(
+    status: 'executing' | 'completed' | 'failed',
+    toolName?: string
+  ): void {
     if (!shouldAnnounceStatus.value) return
 
     let message: string
@@ -169,7 +171,7 @@ export function useA11yStatusFeedback() {
 
     switch (status) {
       case 'executing':
-        message = toolName 
+        message = toolName
           ? `${t('accessibility.messages.toolCallExecuting')}: ${toolName}`
           : t('accessibility.messages.toolCallExecuting')
         break
@@ -188,7 +190,7 @@ export function useA11yStatusFeedback() {
     }
 
     announcePolite(message)
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback(soundType)
     }
@@ -201,13 +203,13 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     const message = hasResults
-      ? (resultCount !== undefined 
-          ? `${resultCount} ${t('accessibility.messages.searchResultsFound')}`
-          : t('accessibility.messages.searchResultsFound'))
+      ? resultCount !== undefined
+        ? `${resultCount} ${t('accessibility.messages.searchResultsFound')}`
+        : t('accessibility.messages.searchResultsFound')
       : t('accessibility.messages.searchResultsEmpty')
-    
+
     announcePolite(message)
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback(hasResults ? 'success' : 'info')
     }
@@ -220,7 +222,7 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     announcePolite(t('accessibility.messages.generationCanceled'))
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('warning')
     }
@@ -233,7 +235,7 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     announcePolite(t('accessibility.messages.retryingMessage'))
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('info')
     }
@@ -256,13 +258,13 @@ export function useA11yStatusFeedback() {
     if (!shouldAnnounceStatus.value) return
 
     const message = isOpen
-      ? (modalTitle 
-          ? `${t('accessibility.navigation.modalOpened')}: ${modalTitle}`
-          : t('accessibility.navigation.modalOpened'))
+      ? modalTitle
+        ? `${t('accessibility.navigation.modalOpened')}: ${modalTitle}`
+        : t('accessibility.navigation.modalOpened')
       : t('accessibility.navigation.modalClosed')
-    
+
     announcePolite(message)
-    
+
     if (shouldPlaySoundFeedback.value) {
       accessibilityStore.playSoundFeedback('info')
     }
@@ -272,12 +274,14 @@ export function useA11yStatusFeedback() {
    * 播报焦点变化（如果启用了详细反馈）
    */
   function announceFocusChange(elementType: string, elementLabel?: string): void {
-    if (!shouldAnnounceStatus.value || !accessibilityStore.settings.screenReader.detailedDescriptions) return
+    if (
+      !shouldAnnounceStatus.value ||
+      !accessibilityStore.settings.screenReader.detailedDescriptions
+    )
+      return
 
-    const message = elementLabel
-      ? `${elementType}: ${elementLabel}`
-      : elementType
-    
+    const message = elementLabel ? `${elementType}: ${elementLabel}` : elementType
+
     // 使用较短的延迟，避免打断用户操作
     setTimeout(() => {
       announcePolite(message)
@@ -314,14 +318,18 @@ export function useA11yStatusFeedback() {
         if (!newIds || !oldIds) return
 
         // 检测开始生成的线程
-        const startedThreads = [...newIds].filter(id => !previousGeneratingThreadIds.value.has(id))
-        startedThreads.forEach(threadId => {
+        const startedThreads = [...newIds].filter(
+          (id) => !previousGeneratingThreadIds.value.has(id)
+        )
+        startedThreads.forEach((threadId) => {
           announceGenerationStart(threadId)
         })
 
         // 检测完成生成的线程
-        const completedThreads = [...previousGeneratingThreadIds.value].filter(id => !newIds.has(id))
-        completedThreads.forEach(threadId => {
+        const completedThreads = [...previousGeneratingThreadIds.value].filter(
+          (id) => !newIds.has(id)
+        )
+        completedThreads.forEach((threadId) => {
           announceGenerationComplete(threadId)
         })
 
@@ -331,30 +339,23 @@ export function useA11yStatusFeedback() {
     )
 
     // 监听连接状态变化
-    const stopWatchingConnection = watch(
-      connectionStatus,
-      (newStatus, oldStatus) => {
-        if (newStatus !== oldStatus && oldStatus !== undefined) {
-          announceConnectionStatus(newStatus)
-          previousConnectionStatus.value = newStatus
-        }
+    const stopWatchingConnection = watch(connectionStatus, (newStatus, oldStatus) => {
+      if (newStatus !== oldStatus && oldStatus !== undefined) {
+        announceConnectionStatus(newStatus)
+        previousConnectionStatus.value = newStatus
       }
-    )
+    })
 
     // 设置在线/离线监听器
     const cleanupOnlineStatus = handleOnlineStatus()
 
     // 保存清理函数
-    cleanupFunctions.push(
-      stopWatchingGeneration,
-      stopWatchingConnection,
-      cleanupOnlineStatus
-    )
+    cleanupFunctions.push(stopWatchingGeneration, stopWatchingConnection, cleanupOnlineStatus)
   })
 
   onUnmounted(() => {
     // 清理所有监听器
-    cleanupFunctions.forEach(cleanup => cleanup())
+    cleanupFunctions.forEach((cleanup) => cleanup())
   })
 
   return {

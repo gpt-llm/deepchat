@@ -8,7 +8,12 @@ import { config } from '@vue/test-utils'
 import '@testing-library/jest-dom'
 import { toHaveNoViolations, configureAxe } from 'vitest-axe'
 import { expect } from 'vitest'
-import { createTestApp, mockElectronAPIs, setupA11yTestEnvironment, toBeAccessible } from './utils/test-helpers'
+import {
+  createTestApp,
+  mockElectronAPIs,
+  setupA11yTestEnvironment,
+  toBeAccessible
+} from './utils/test-helpers'
 
 // Extend Vitest expect with axe and custom matchers
 expect.extend(toHaveNoViolations)
@@ -19,9 +24,9 @@ configureAxe({
   rules: {
     // Core WCAG 2.1 AA rules
     'color-contrast': { enabled: true },
-    'keyboard': { enabled: true },
+    keyboard: { enabled: true },
     'focus-order-semantics': { enabled: true },
-    'label': { enabled: true },
+    label: { enabled: true },
     'heading-order': { enabled: true },
     'landmark-unique': { enabled: true },
     'landmark-one-main': { enabled: true },
@@ -32,13 +37,13 @@ configureAxe({
     'aria-valid-attr-value': { enabled: true },
     'image-alt': { enabled: true },
     'form-field-multiple-labels': { enabled: true },
-    'list': { enabled: true },
-    'listitem': { enabled: true },
+    list: { enabled: true },
+    listitem: { enabled: true },
     'definition-list': { enabled: true },
-    
+
     // Disable some rules that may be too strict for testing
     'page-has-heading-one': { enabled: false },
-    'region': { enabled: false }
+    region: { enabled: false }
   },
   tags: ['wcag2a', 'wcag2aa', 'wcag21aa']
 })
@@ -52,19 +57,19 @@ let testEnvironment: ReturnType<typeof setupA11yTestEnvironment>
 beforeEach(() => {
   // Create fresh test app for each test
   testApp = createTestApp()
-  
+
   // Setup accessibility test environment
   testEnvironment = setupA11yTestEnvironment()
-  
+
   // Mock Electron APIs
   mockElectronAPIs()
-  
+
   // Configure Vue Test Utils to use our test app
   config.global.plugins = [
     testApp._context.config.globalProperties.$pinia,
     testApp._context.config.globalProperties.$i18n
   ]
-  
+
   // Mock common global properties
   config.global.mocks = {
     $t: (key: string, params?: Record<string, any>) => {
@@ -83,19 +88,19 @@ beforeEach(() => {
         'chat.newMessage': 'New message received',
         'settings.accessibility': 'Accessibility Settings'
       }
-      
+
       let translation = translations[key] || key
-      
+
       // Simple parameter replacement
       if (params) {
         Object.entries(params).forEach(([param, value]) => {
           translation = translation.replace(new RegExp(`{${param}}`, 'g'), String(value))
         })
       }
-      
+
       return translation
     },
-    
+
     $route: {
       path: '/',
       name: 'home',
@@ -103,7 +108,7 @@ beforeEach(() => {
       query: {},
       meta: {}
     },
-    
+
     $router: {
       push: vi.fn(),
       replace: vi.fn(),
@@ -112,11 +117,11 @@ beforeEach(() => {
       forward: vi.fn()
     }
   }
-  
+
   // Mock global CSS custom properties for theme testing
   document.documentElement.style.setProperty('--font-size-base', '16px')
   document.documentElement.style.setProperty('--color-contrast-ratio', '4.5')
-  
+
   // Mock window properties
   Object.defineProperty(window, 'getComputedStyle', {
     writable: true,
@@ -133,7 +138,7 @@ beforeEach(() => {
       clip: 'auto'
     }))
   })
-  
+
   // Mock focus management
   let activeElement = document.body
   Object.defineProperty(document, 'activeElement', {
@@ -142,14 +147,14 @@ beforeEach(() => {
       activeElement = element
     }
   })
-  
+
   // Mock element.focus() and blur()
-  HTMLElement.prototype.focus = vi.fn().mockImplementation(function(this: HTMLElement) {
+  HTMLElement.prototype.focus = vi.fn().mockImplementation(function (this: HTMLElement) {
     activeElement = this
     this.dispatchEvent(new FocusEvent('focus', { bubbles: true }))
   })
-  
-  HTMLElement.prototype.blur = vi.fn().mockImplementation(function(this: HTMLElement) {
+
+  HTMLElement.prototype.blur = vi.fn().mockImplementation(function (this: HTMLElement) {
     if (activeElement === this) {
       activeElement = document.body
     }
@@ -160,16 +165,16 @@ beforeEach(() => {
 afterEach(() => {
   // Cleanup test environment
   testEnvironment.cleanup()
-  
+
   // Reset global mocks
   vi.clearAllMocks()
-  
+
   // Clear DOM
   document.body.innerHTML = ''
-  
+
   // Reset CSS custom properties
   document.documentElement.removeAttribute('style')
-  
+
   // Reset Vue Test Utils config
   config.global.plugins = []
   config.global.mocks = {}
@@ -195,7 +200,7 @@ declare global {
       }
     }
   }
-  
+
   namespace Vi {
     interface JestAssertion<T = any> {
       toHaveNoViolations(): T
@@ -229,7 +234,7 @@ export const TEST_DATA = {
       timestamp: new Date().toISOString()
     }
   ],
-  
+
   sampleUser: {
     id: 'user1',
     name: 'Test User',

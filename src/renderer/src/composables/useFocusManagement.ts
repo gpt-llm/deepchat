@@ -25,7 +25,7 @@ const FOCUSABLE_SELECTOR = [
  */
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
   const elements = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)) as HTMLElement[]
-  return elements.filter(element => {
+  return elements.filter((element) => {
     // 检查元素是否实际可见和可交互
     const style = window.getComputedStyle(element)
     return (
@@ -71,7 +71,7 @@ export function useFocusTrap() {
 
     // 更新可聚焦元素列表（处理动态内容）
     focusableElements = getFocusableElements(container)
-    
+
     if (focusableElements.length === 0) {
       return
     }

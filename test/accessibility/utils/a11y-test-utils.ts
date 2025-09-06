@@ -22,9 +22,9 @@ export const axeConfig = {
     // Require proper heading structure
     'heading-order': { enabled: true },
     // Ensure keyboard navigation is possible
-    'keyboard': { enabled: true },
+    keyboard: { enabled: true },
     // Require ARIA labels where needed
-    'label': { enabled: true },
+    label: { enabled: true },
     // Ensure landmarks are used properly
     'landmark-unique': { enabled: true },
     'landmark-one-main': { enabled: true },
@@ -32,8 +32,8 @@ export const axeConfig = {
     'focus-order-semantics': { enabled: true },
     'focusable-content': { enabled: true },
     // Semantic structure
-    'list': { enabled: true },
-    'listitem': { enabled: true },
+    list: { enabled: true },
+    listitem: { enabled: true },
     'definition-list': { enabled: true },
     // Form controls
     'label-title-only': { enabled: true },
@@ -117,7 +117,7 @@ export function testAriaAttributes(
 
   for (const [attribute, expectedValue] of Object.entries(expectedAttributes)) {
     const actualValue = element.getAttribute(attribute)
-    
+
     if (expectedValue === null) {
       expect(actualValue).toBeNull()
     } else if (typeof expectedValue === 'boolean') {
@@ -147,9 +147,11 @@ export async function testFocusManagement(
     // Check if focus moved to expected element
     const focusedElement = document.activeElement
     const expectedElement = wrapper.element.querySelector(test.expectedFocusSelector)
-    
-    expect(focusedElement).toBe(expectedElement, 
-      `Focus should move to ${test.expectedFocusSelector} when ${test.description}`)
+
+    expect(focusedElement).toBe(
+      expectedElement,
+      `Focus should move to ${test.expectedFocusSelector} when ${test.description}`
+    )
   }
 }
 
@@ -166,9 +168,11 @@ export function testScreenReaderAnnouncements(
 ): void {
   for (const announcement of expectedAnnouncements) {
     const liveRegion = wrapper.find(`[aria-live="${announcement.ariaLive || 'polite'}"]`)
-    
-    expect(liveRegion.exists()).toBe(true, 
-      'Component should have an ARIA live region for announcements')
+
+    expect(liveRegion.exists()).toBe(
+      true,
+      'Component should have an ARIA live region for announcements'
+    )
 
     announcement.trigger()
 
@@ -190,9 +194,8 @@ export function testSemanticStructure(
 ): void {
   for (const structure of expectedStructure) {
     const element = wrapper.find(structure.selector)
-    
-    expect(element.exists()).toBe(true, 
-      `Element with selector ${structure.selector} should exist`)
+
+    expect(element.exists()).toBe(true, `Element with selector ${structure.selector} should exist`)
 
     if (structure.role) {
       expect(element.attributes('role')).toBe(structure.role)
@@ -254,8 +257,8 @@ export function mockUserPreferences(preferences: {
       removeListener: vi.fn(),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
+      dispatchEvent: vi.fn()
+    }))
   })
 
   // Mock font size changes
@@ -280,7 +283,7 @@ export function generateA11yReport(results: A11yTestResult[]): string {
   const totalTests = results.length
   const totalViolations = results.reduce((sum, r) => sum + r.violations, 0)
   const totalPasses = results.reduce((sum, r) => sum + r.passes, 0)
-  
+
   const report = `
 # Accessibility Test Report
 
@@ -293,14 +296,18 @@ Generated: ${new Date().toISOString()}
 - Success Rate: ${((totalPasses / (totalPasses + totalViolations)) * 100).toFixed(2)}%
 
 ## Component Results
-${results.map(result => `
+${results
+  .map(
+    (result) => `
 ### ${result.component}
 - Violations: ${result.violations}
 - Passes: ${result.passes}
 - Incomplete: ${result.incomplete}
 - WCAG Level: ${result.wcagLevel}
 - Tested: ${result.timestamp}
-`).join('')}
+`
+  )
+  .join('')}
 
 ## Recommendations
 ${totalViolations > 0 ? '⚠️  Please review and fix accessibility violations before production deployment.' : '✅ All accessibility tests passed!'}
@@ -317,13 +324,14 @@ export function toBeAccessible() {
     async assertMessage() {
       return 'Expected element to be accessible'
     },
-    
+
     async pass(element: HTMLElement) {
       try {
         const results = await axe(element, axeConfig)
         return {
           pass: results.violations.length === 0,
-          message: () => `Expected no accessibility violations, but found ${results.violations.length}`
+          message: () =>
+            `Expected no accessibility violations, but found ${results.violations.length}`
         }
       } catch (error) {
         return {

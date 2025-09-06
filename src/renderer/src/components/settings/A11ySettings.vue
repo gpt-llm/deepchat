@@ -12,7 +12,7 @@
       </div>
 
       <!-- Screen Reader Support Section -->
-      <SettingsSection 
+      <SettingsSection
         :title="t('settings.accessibility.screenReader.title')"
         :description="t('settings.accessibility.screenReader.description')"
       >
@@ -23,21 +23,25 @@
             :label="t('settings.accessibility.screenReader.enabled')"
             :description="t('settings.accessibility.screenReader.enabledDesc')"
           />
-          
+
           <SwitchField
             :model-value="settings.screenReader.announceNewMessages"
-            @update:model-value="(value) => updateScreenReaderSettings({ announceNewMessages: value })"
+            @update:model-value="
+              (value) => updateScreenReaderSettings({ announceNewMessages: value })
+            "
             :label="t('settings.accessibility.screenReader.announceMessages')"
             :disabled="!settings.screenReader.enabled"
           />
-          
+
           <SwitchField
             :model-value="settings.screenReader.detailedDescriptions"
-            @update:model-value="(value) => updateScreenReaderSettings({ detailedDescriptions: value })"
+            @update:model-value="
+              (value) => updateScreenReaderSettings({ detailedDescriptions: value })
+            "
             :label="t('settings.accessibility.screenReader.detailedDesc')"
             :disabled="!settings.screenReader.enabled"
           />
-          
+
           <SwitchField
             :model-value="settings.screenReader.reduceVerbosity"
             @update:model-value="(value) => updateScreenReaderSettings({ reduceVerbosity: value })"
@@ -58,42 +62,42 @@
             @update:model-value="(value) => updateKeyboardSettings({ enhancedNavigation: value })"
             :label="t('settings.accessibility.keyboard.enhanced')"
           />
-          
+
           <SwitchField
             :model-value="settings.keyboard.showFocusIndicators"
             @update:model-value="(value) => updateKeyboardSettings({ showFocusIndicators: value })"
             :label="t('settings.accessibility.keyboard.focusIndicators')"
           />
-          
+
           <SwitchField
             :model-value="settings.keyboard.enableSkipLinks"
             @update:model-value="(value) => updateKeyboardSettings({ enableSkipLinks: value })"
             :label="t('settings.accessibility.keyboard.skipLinks')"
           />
-          
+
           <!-- Keyboard Shortcuts Configuration -->
           <div class="pt-4 border-t">
             <h4 class="font-medium mb-4">{{ t('settings.accessibility.keyboard.shortcuts') }}</h4>
-            
+
             <div class="grid gap-4 sm:grid-cols-2">
               <ShortcutField
                 :model-value="settings.keyboard.shortcuts.skipToMain"
                 @update:model-value="(value) => updateShortcut('skipToMain', value)"
                 :label="t('settings.accessibility.keyboard.skipToMain')"
               />
-              
+
               <ShortcutField
                 :model-value="settings.keyboard.shortcuts.newConversation"
                 @update:model-value="(value) => updateShortcut('newConversation', value)"
                 :label="t('settings.accessibility.keyboard.newConversation')"
               />
-              
+
               <ShortcutField
                 :model-value="settings.keyboard.shortcuts.settings"
                 @update:model-value="(value) => updateShortcut('settings', value)"
                 :label="t('settings.accessibility.keyboard.settings')"
               />
-              
+
               <ShortcutField
                 :model-value="settings.keyboard.shortcuts.help"
                 @update:model-value="(value) => updateShortcut('help', value)"
@@ -115,13 +119,13 @@
             @update:model-value="(value) => updateVisualSettings({ highContrast: value })"
             :label="t('settings.accessibility.visual.highContrast')"
           />
-          
+
           <SwitchField
             :model-value="settings.visual.reducedMotion"
             @update:model-value="(value) => updateVisualSettings({ reducedMotion: value })"
             :label="t('settings.accessibility.visual.reducedMotion')"
           />
-          
+
           <!-- Font Size Selection -->
           <RadioGroupField
             :model-value="settings.visual.fontSize"
@@ -129,15 +133,17 @@
             :label="t('settings.accessibility.visual.fontSize')"
             :options="fontSizeOptions"
           />
-          
+
           <!-- Focus Indicator Style -->
           <RadioGroupField
             :model-value="settings.visual.focusIndicatorStyle"
-            @update:model-value="(value) => updateVisualSettings({ focusIndicatorStyle: value as any })"
+            @update:model-value="
+              (value) => updateVisualSettings({ focusIndicatorStyle: value as any })
+            "
             :label="t('settings.accessibility.visual.focusIndicator')"
             :options="focusIndicatorOptions"
           />
-          
+
           <!-- Contrast Level -->
           <RadioGroupField
             :model-value="settings.visual.contrastLevel"
@@ -159,19 +165,21 @@
             @update:model-value="(value) => updateCognitiveSettings({ simplifiedMode: value })"
             :label="t('settings.accessibility.cognitive.simplifiedMode')"
           />
-          
+
           <SwitchField
             :model-value="settings.cognitive.readingAssistance"
             @update:model-value="(value) => updateCognitiveSettings({ readingAssistance: value })"
             :label="t('settings.accessibility.cognitive.readingAssistance')"
           />
-          
+
           <SwitchField
             :model-value="settings.cognitive.autoImageDescriptions"
-            @update:model-value="(value) => updateCognitiveSettings({ autoImageDescriptions: value })"
+            @update:model-value="
+              (value) => updateCognitiveSettings({ autoImageDescriptions: value })
+            "
             :label="t('settings.accessibility.cognitive.autoImageDesc')"
           />
-          
+
           <SwitchField
             :model-value="settings.cognitive.stepByStepGuidance"
             @update:model-value="(value) => updateCognitiveSettings({ stepByStepGuidance: value })"
@@ -191,13 +199,13 @@
             @update:model-value="(value) => updateAudioSettings({ voiceAnnouncements: value })"
             :label="t('settings.accessibility.audio.voiceAnnouncements')"
           />
-          
+
           <SwitchField
             :model-value="settings.audio.soundFeedback"
             @update:model-value="(value) => updateAudioSettings({ soundFeedback: value })"
             :label="t('settings.accessibility.audio.soundFeedback')"
           />
-          
+
           <!-- Voice Speed -->
           <RadioGroupField
             :model-value="settings.audio.voiceSpeed"
@@ -206,11 +214,13 @@
             :options="voiceSpeedOptions"
             :disabled="!settings.audio.voiceAnnouncements"
           />
-          
+
           <!-- Announcement Volume -->
           <RadioGroupField
             :model-value="settings.audio.announcementVolume"
-            @update:model-value="(value) => updateAudioSettings({ announcementVolume: value as any })"
+            @update:model-value="
+              (value) => updateAudioSettings({ announcementVolume: value as any })
+            "
             :label="t('settings.accessibility.audio.volume')"
             :options="volumeOptions"
             :disabled="!settings.audio.soundFeedback"
@@ -223,7 +233,7 @@
         <Button variant="outline" @click="resetToDefaults">
           {{ t('settings.accessibility.resetDefaults') }}
         </Button>
-        
+
         <Button @click="saveSettings">
           {{ t('settings.accessibility.save') }}
         </Button>
@@ -246,9 +256,9 @@ import RadioGroupField from './components/RadioGroupField.vue'
 const { t } = useI18n()
 const accessibilityStore = useAccessibilityStore()
 
-const { 
-  settings, 
-  updateScreenReaderSettings, 
+const {
+  settings,
+  updateScreenReaderSettings,
   updateKeyboardSettings,
   updateVisualSettings,
   updateCognitiveSettings,
@@ -294,7 +304,10 @@ const volumeOptions = computed(() => [
 ])
 
 // Update shortcut helper
-const updateShortcut = async (key: keyof typeof settings.value.keyboard.shortcuts, value: string) => {
+const updateShortcut = async (
+  key: keyof typeof settings.value.keyboard.shortcuts,
+  value: string
+) => {
   const shortcuts = { ...settings.value.keyboard.shortcuts, [key]: value }
   await updateKeyboardSettings({ shortcuts })
 }

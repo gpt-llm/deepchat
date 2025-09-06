@@ -151,34 +151,34 @@ router.beforeEach(async (to, from, next) => {
 router.afterEach(async (to, _from) => {
   // Wait for the route to be fully loaded
   await nextTick()
-  
+
   try {
     // Only access stores if they're available (during app runtime)
     const accessibilityStore = useAccessibilityStore()
-    
+
     // Only perform accessibility operations if features are enabled
-    const hasAccessibilityFeatures = accessibilityStore.isScreenReaderOptimized || 
-                                   accessibilityStore.isKeyboardNavigationEnabled
-    
+    const hasAccessibilityFeatures =
+      accessibilityStore.isScreenReaderOptimized || accessibilityStore.isKeyboardNavigationEnabled
+
     if (!hasAccessibilityFeatures) {
       return
     }
-    
+
     const { announcePolite } = useA11yAnnouncement()
-    
+
     // Announce page change for screen reader users
     if (accessibilityStore.isScreenReaderOptimized && to.meta?.titleKey) {
       // Use i18n key if available, otherwise use route name
       const pageTitle = to.meta.titleKey || to.name?.toString() || to.path
       announcePolite(`Navigated to ${pageTitle}`)
     }
-    
+
     // Focus management - focus the main content area
     const mainContent = document.getElementById('main-content')
     if (mainContent && accessibilityStore.isKeyboardNavigationEnabled) {
       mainContent.focus()
     }
-    
+
     // Update document title for better accessibility
     if (to.meta?.titleKey) {
       // In a real app, you'd want to use i18n here
