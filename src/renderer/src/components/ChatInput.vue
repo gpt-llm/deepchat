@@ -1,6 +1,8 @@
 <template>
   <div
     class="w-full max-w-4xl mx-auto"
+    role="region"
+    :aria-label="t('chat.input.fileDropArea')"
     @dragenter.prevent="handleDragEnter"
     @dragover.prevent="handleDragOver"
     @drop.prevent="handleDrop"
@@ -13,7 +15,7 @@
         class="bg-card border border-border rounded-lg focus-within:border-primary p-2 flex flex-col gap-2 shadow-sm relative"
       >
         <!-- {{  t('chat.input.fileArea') }} -->
-        <div v-if="selectedFiles.length > 0">
+        <div v-if="selectedFiles.length > 0" role="list" :aria-label="t('chat.input.fileList')">
           <TransitionGroup
             name="file-list"
             tag="div"
@@ -33,6 +35,7 @@
               :tokens="file.token"
               :thumbnail="file.thumbnail"
               :context="'input'"
+              role="listitem"
               @click="previewFile(file.path)"
               @delete="deleteFile(idx)"
             />
@@ -50,6 +53,7 @@
                   variant="outline"
                   size="icon"
                   class="w-7 h-7 text-xs rounded-lg"
+                  :aria-label="t('chat.input.uploadFile')"
                   @click="openFilePicker"
                 >
                   <Icon icon="lucide:paperclip" class="w-4 h-4" />
@@ -121,7 +125,8 @@
               <TooltipContent>{{ t('chat.features.webSearch') }}</TooltipContent>
             </Tooltip>
 
-            <McpToolsList />
+            <McpToolsList :aria-describedby="'mcp-tools-description'" />
+            <div id="mcp-tools-description" class="sr-only">{{ t('chat.input.mcpToolsDescription') }}</div>
             <!-- {{ t('chat.input.fileSelect') }} -->
             <slot name="addon-buttons"></slot>
           </div>
@@ -167,6 +172,8 @@
               size="icon"
               class="w-7 h-7 text-xs rounded-lg"
               :disabled="disabledSend"
+              :aria-label="t('chat.input.sendMessage')"
+              :aria-disabled="disabledSend"
               @click="emitSend"
             >
               <Icon icon="lucide:arrow-up" class="w-4 h-4" />

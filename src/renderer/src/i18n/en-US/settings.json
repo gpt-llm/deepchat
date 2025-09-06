@@ -830,5 +830,93 @@
     "resetToDefaultFailed": "Failed to reset, please try again",
     "clearSuccess": "System prompt cleared successfully",
     "clearFailed": "Failed to clear, please try again"
+  },
+  "accessibility": {
+    "title": "Accessibility",
+    "description": "Configure accessibility options to improve your experience",
+    "resetDefaults": "Reset to Defaults",
+    "save": "Save Settings",
+    "resetSuccess": "Accessibility settings reset successfully",
+    "resetError": "Failed to reset accessibility settings",
+    "saveSuccess": "Accessibility settings saved successfully",
+    "saveError": "Failed to save accessibility settings",
+    "screenReader": {
+      "title": "Screen Reader Support",
+      "description": "Optimize the interface for screen reader users",
+      "enabled": "Enable screen reader optimizations",
+      "enabledDesc": "Optimize interface and interactions for screen reader users",
+      "announceMessages": "Announce new messages",
+      "detailedDesc": "Detailed button descriptions",
+      "reduceVerbosity": "Reduce verbose announcements"
+    },
+    "keyboard": {
+      "title": "Keyboard Navigation",
+      "description": "Enhanced keyboard operation and shortcut support",
+      "enhanced": "Enhanced keyboard navigation",
+      "focusIndicators": "Show focus indicators",
+      "skipLinks": "Enable skip links",
+      "shortcuts": "Keyboard Shortcuts",
+      "skipToMain": "Skip to main content",
+      "newConversation": "New conversation",
+      "settings": "Settings",
+      "help": "Help",
+      "recordShortcut": "Record shortcut",
+      "recording": "Recording...",
+      "change": "Change",
+      "cancel": "Cancel",
+      "noShortcut": "No shortcut set",
+      "recordingHelp": "Press the key combination you want to use",
+      "shortcutHelp": "Click the Change button and press the desired key combination"
+    },
+    "visual": {
+      "title": "Visual Accessibility",
+      "description": "Adjust visual effects and contrast settings",
+      "highContrast": "High contrast mode",
+      "reducedMotion": "Reduce animations and motion",
+      "fontSize": "Font Size",
+      "focusIndicator": "Focus Indicator Style",
+      "contrastLevel": "Contrast Level",
+      "fontSizes": {
+        "small": "Small",
+        "normal": "Normal",
+        "large": "Large",
+        "extraLarge": "Extra Large"
+      },
+      "focusStyles": {
+        "default": "Default",
+        "thick": "Thick",
+        "highContrast": "High Contrast"
+      },
+      "contrastLevels": {
+        "aa": "AA (Standard)",
+        "aaa": "AAA (Enhanced)"
+      }
+    },
+    "cognitive": {
+      "title": "Cognitive Assistance",
+      "description": "Simplify interface and provide cognitive assistance features",
+      "simplifiedMode": "Simplified interface mode",
+      "readingAssistance": "Reading assistance tools",
+      "autoImageDesc": "Auto-generate image descriptions",
+      "stepByStep": "Step-by-step guidance"
+    },
+    "audio": {
+      "title": "Audio & Voice",
+      "description": "Configure audio feedback and voice notifications",
+      "voiceAnnouncements": "Voice announcements",
+      "soundFeedback": "Sound feedback for actions",
+      "voiceSpeed": "Voice Speed",
+      "volume": "Announcement Volume",
+      "voiceSpeeds": {
+        "slow": "Slow",
+        "normal": "Normal",
+        "fast": "Fast"
+      },
+      "volumes": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    }
   }
 }

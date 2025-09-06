@@ -10,17 +10,47 @@ import {
   DialogPortal,
   useForwardPropsEmits,
 } from 'radix-vue'
-import { computed, type HTMLAttributes } from 'vue'
+import { computed, ref, type HTMLAttributes } from 'vue'
+import { useFocusRestore } from '@/composables/useFocusManagement'
 
-const props = defineProps<DialogContentProps & { class?: HTMLAttributes['class'] }>()
+interface Props extends DialogContentProps {
+  class?: HTMLAttributes['class']
+  /** 是否启用无障碍增强 */
+  enableA11yEnhancements?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  enableA11yEnhancements: true
+})
+
 const emits = defineEmits<DialogContentEmits>()
 
+// 组件引用
+const dialogContentRef = ref<HTMLElement>()
+
+// 焦点管理（仅在启用无障碍增强时使用）
+const focusRestore = props.enableA11yEnhancements ? useFocusRestore() : null
+
 const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props
+  const { class: _, enableA11yEnhancements: __, ...delegated } = props
   return delegated
 })
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
+
+// 处理焦点管理
+const handleOpenAutoFocus = (event: Event) => {
+  if (props.enableA11yEnhancements && focusRestore) {
+    focusRestore.saveFocus()
+  }
+}
+
+const handleCloseAutoFocus = (event: Event) => {
+  if (props.enableA11yEnhancements && focusRestore) {
+    focusRestore.restoreFocus()
+    focusRestore.clearFocus()
+  }
+}
 </script>
 
 <template>
@@ -29,13 +59,18 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
     />
     <DialogContent
+      ref="dialogContentRef"
       v-bind="forwarded"
       :class="cn(
         'fixed right-0 top-0 z-50 h-full w-1/2 border-l bg-background shadow-lg duration-200',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right',
+        // 无障碍焦点增强
+        props.enableA11yEnhancements && 'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
         props.class
       )"
+      @open-auto-focus="handleOpenAutoFocus"
+      @close-auto-focus="handleCloseAutoFocus"
     >
       <slot />
       <DialogClose

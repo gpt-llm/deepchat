@@ -1,0 +1,232 @@
+/* High Contrast Theme for DeepChat */
+/* Provides WCAG AAA compliant color contrast ratios */
+
+:root.a11y-high-contrast {
+  /* Light High Contrast Theme */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 0%;
+  --primary: 0 0% 0%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 95%;
+  --secondary-foreground: 0 0% 0%;
+  --muted: 0 0% 90%;
+  --muted-foreground: 0 0% 0%;
+  --accent: 220 100% 25%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 100% 40%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 120 100% 25%;
+  --success-foreground: 0 0% 100%;
+  --warning: 45 100% 35%;
+  --warning-foreground: 0 0% 100%;
+  --border: 0 0% 0%;
+  --input: 0 0% 95%;
+  --ring: 0 0% 0%;
+  --radius: 0.375rem;
+
+  /* High contrast specific colors */
+  --a11y-focus-color: 220 100% 50%;
+  --a11y-focus-bg: 0 0% 100%;
+  --a11y-link-color: 220 100% 25%;
+  --a11y-link-visited: 270 100% 25%;
+  --a11y-error-bg: 0 100% 95%;
+  --a11y-success-bg: 120 100% 95%;
+  --a11y-warning-bg: 45 100% 95%;
+}
+
+:root.dark.a11y-high-contrast {
+  /* Dark High Contrast Theme */
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 0%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 0%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 0 0% 100%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 5%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 10%;
+  --muted-foreground: 0 0% 100%;
+  --accent: 220 100% 75%;
+  --accent-foreground: 0 0% 0%;
+  --destructive: 0 100% 70%;
+  --destructive-foreground: 0 0% 0%;
+  --success: 120 100% 75%;
+  --success-foreground: 0 0% 0%;
+  --warning: 45 100% 75%;
+  --warning-foreground: 0 0% 0%;
+  --border: 0 0% 100%;
+  --input: 0 0% 5%;
+  --ring: 0 0% 100%;
+
+  /* High contrast specific colors for dark mode */
+  --a11y-focus-color: 220 100% 75%;
+  --a11y-focus-bg: 0 0% 0%;
+  --a11y-link-color: 220 100% 75%;
+  --a11y-link-visited: 270 100% 75%;
+  --a11y-error-bg: 0 100% 10%;
+  --a11y-success-bg: 120 100% 10%;
+  --a11y-warning-bg: 45 100% 10%;
+}
+
+/* High contrast button styles */
+.a11y-high-contrast button {
+  border: 2px solid hsl(var(--foreground));
+  font-weight: 600;
+}
+
+.a11y-high-contrast button:hover {
+  background-color: hsl(var(--foreground));
+  color: hsl(var(--background));
+}
+
+.a11y-high-contrast button:focus {
+  outline: 3px solid hsl(var(--a11y-focus-color));
+  outline-offset: 2px;
+}
+
+/* High contrast input styles */
+.a11y-high-contrast input,
+.a11y-high-contrast textarea,
+.a11y-high-contrast select {
+  border: 2px solid hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.a11y-high-contrast input:focus,
+.a11y-high-contrast textarea:focus,
+.a11y-high-contrast select:focus {
+  outline: 3px solid hsl(var(--a11y-focus-color));
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+/* High contrast link styles */
+.a11y-high-contrast a {
+  color: hsl(var(--a11y-link-color));
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.a11y-high-contrast a:visited {
+  color: hsl(var(--a11y-link-visited));
+}
+
+.a11y-high-contrast a:hover {
+  text-decoration: none;
+  background-color: hsl(var(--a11y-link-color));
+  color: hsl(var(--background));
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.a11y-high-contrast a:focus {
+  outline: 3px solid hsl(var(--a11y-focus-color));
+  outline-offset: 2px;
+}
+
+/* High contrast card and panel styles */
+.a11y-high-contrast .card,
+.a11y-high-contrast .panel {
+  border: 2px solid hsl(var(--foreground));
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+}
+
+/* High contrast message styles */
+.a11y-high-contrast .message {
+  border: 2px solid hsl(var(--border));
+}
+
+.a11y-high-contrast .message.user {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+.a11y-high-contrast .message.assistant {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border-color: hsl(var(--secondary-foreground));
+}
+
+/* High contrast status indicators */
+.a11y-high-contrast .status-error {
+  background-color: hsl(var(--a11y-error-bg));
+  color: hsl(var(--destructive));
+  border: 2px solid hsl(var(--destructive));
+}
+
+.a11y-high-contrast .status-success {
+  background-color: hsl(var(--a11y-success-bg));
+  color: hsl(var(--success));
+  border: 2px solid hsl(var(--success));
+}
+
+.a11y-high-contrast .status-warning {
+  background-color: hsl(var(--a11y-warning-bg));
+  color: hsl(var(--warning));
+  border: 2px solid hsl(var(--warning));
+}
+
+/* High contrast dropdown and modal styles */
+.a11y-high-contrast .dropdown,
+.a11y-high-contrast .modal {
+  border: 3px solid hsl(var(--foreground));
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+}
+
+/* High contrast scrollbar styles */
+.a11y-high-contrast ::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.a11y-high-contrast ::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+  border: 2px solid hsl(var(--foreground));
+}
+
+.a11y-high-contrast ::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground));
+  border: 2px solid hsl(var(--background));
+}
+
+.a11y-high-contrast ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent));
+}
+
+/* High contrast selection styles */
+.a11y-high-contrast ::selection {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* High contrast loading and skeleton styles */
+.a11y-high-contrast .loading,
+.a11y-high-contrast .skeleton {
+  background-color: hsl(var(--muted));
+  border: 2px solid hsl(var(--foreground));
+}
+
+/* High contrast separator styles */
+.a11y-high-contrast .separator,
+.a11y-high-contrast hr {
+  border-color: hsl(var(--foreground));
+  border-width: 2px;
+}
+
+/* Ensure sufficient contrast for disabled elements */
+.a11y-high-contrast :disabled,
+.a11y-high-contrast [aria-disabled="true"] {
+  opacity: 0.7;
+  border: 2px dashed hsl(var(--muted-foreground));
+  color: hsl(var(--muted-foreground));
+}

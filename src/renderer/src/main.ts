@@ -10,6 +10,7 @@ import { createI18n } from 'vue-i18n'
 import locales from './i18n'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import 'vue-renderer-markdown/index.tailwind.css'
+import { useAccessibilityStore } from './stores/accessibility'
 
 const i18n = createI18n({
   locale: 'zh-CN',
@@ -27,4 +28,9 @@ const app = createApp(App)
 app.use(pinia)
 app.use(router)
 app.use(i18n)
+
+// Initialize accessibility store
+const accessibilityStore = useAccessibilityStore()
+accessibilityStore.loadSettings()
+
 app.mount('#app')

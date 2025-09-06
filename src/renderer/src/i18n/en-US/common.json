@@ -73,5 +73,37 @@
   "delete": "Delete",
   "save": "Save",
   "clear": "Clear",
-  "saved": "Saved"
+  "saved": "Saved",
+  "accessibility": {
+    "skipToMainContent": "Skip to main content",
+    "skipToNavigation": "Skip to navigation",
+    "skipToSidebar": "Skip to sidebar",
+    "skipToChatInput": "Skip to chat input",
+    "announcer": {
+      "polite": "Polite announcement region",
+      "assertive": "Important announcement region",
+      "debugTitle": "Accessibility Debug Panel",
+      "hideDebug": "Hide debug info"
+    },
+    "navigation": {
+      "skipToMain": "Skip to main content",
+      "skipToSidebar": "Skip to sidebar", 
+      "skipToInput": "Skip to input",
+      "focusMessageList": "Focus on message list",
+      "focusSidebar": "Focus on sidebar",
+      "focusInputField": "Focus on input field",
+      "focusSettings": "Focus on settings"
+    },
+    "shortcuts": {
+      "shortcutsAvailable": "Keyboard shortcuts available",
+      "shortcutsHelp": "Keyboard shortcuts help",
+      "shortcutDescription": "Press {keys} to {action}"
+    },
+    "status": {
+      "connected": "Connected",
+      "disconnected": "Disconnected", 
+      "connecting": "Connecting",
+      "error": "Connection error"
+    }
+  }
 }

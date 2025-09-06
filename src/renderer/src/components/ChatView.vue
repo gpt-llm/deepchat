@@ -1,18 +1,38 @@
 <template>
-  <div class="flex flex-col overflow-hidden h-0 flex-1">
+  <!-- Skip to main content link -->
+  <a 
+    href="#main-chat-area" 
+    class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:text-sm"
+  >
+    {{ $t('chat.skipToMainContent') }}
+  </a>
+  <div 
+    id="main-chat-area"
+    class="flex flex-col overflow-hidden h-0 flex-1" 
+    role="main" 
+    :aria-label="$t('chat.chatConversation')"
+  >
     <!-- 消息列表区域 -->
-    <MessageList
-      :key="chatStore.getActiveThreadId() ?? 'default'"
-      ref="messageList"
-      :messages="chatStore.getMessages()"
-      @scroll-bottom="scrollToBottom"
-    />
+    <div 
+      role="log" 
+      aria-live="polite" 
+      :aria-label="$t('chat.messageHistory')"
+      class="flex-1 overflow-hidden"
+    >
+      <MessageList
+        :key="chatStore.getActiveThreadId() ?? 'default'"
+        ref="messageList"
+        :messages="chatStore.getMessages()"
+        @scroll-bottom="scrollToBottom"
+      />
+    </div>
 
     <!-- 输入框区域 -->
-    <div class="flex-none px-2 pb-2">
+    <div class="flex-none px-2 pb-2" role="region" :aria-label="$t('chat.inputArea')">
       <ChatInput
         ref="chatInput"
         :disabled="!chatStore.getActiveThreadId() || isGenerating"
+        :aria-label="$t('chat.messageInput')"
         @send="handleSend"
         @file-upload="handleFileUpload"
       />

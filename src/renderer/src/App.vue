@@ -17,6 +17,23 @@ import TranslatePopup from '@/components/popup/TranslatePopup.vue'
 import ModelCheckDialog from '@/components/settings/ModelCheckDialog.vue'
 import { useModelCheckStore } from '@/stores/modelCheck'
 import MessageDialog from './components/ui/MessageDialog.vue'
+// Accessibility imports - lazily loaded only when needed
+import { useAccessibilityStore } from '@/stores/accessibility'
+import { defineAsyncComponent } from 'vue'
+
+// Lazy load accessibility components
+const A11yProvider = defineAsyncComponent(() => import('@/components/accessibility/A11yProvider.vue'))
+const A11yAnnouncer = defineAsyncComponent(() => import('@/components/accessibility/A11yAnnouncer.vue'))
+const SkipLinks = defineAsyncComponent(() => import('@/components/accessibility/SkipLinks.vue'))
+
+// Only load accessibility CSS when accessibility features are enabled
+let accessibilityCssLoaded = false
+const loadAccessibilityCSS = async () => {
+  if (!accessibilityCssLoaded) {
+    await import('@/components/accessibility/accessibility.css')
+    accessibilityCssLoaded = true
+  }
+}
 
 const route = useRoute()
 const configPresenter = usePresenter('configPresenter')
@@ -27,6 +44,7 @@ const settingsStore = useSettingsStore()
 const themeStore = useThemeStore()
 const langStore = useLanguageStore()
 const modelCheckStore = useModelCheckStore()
+const accessibilityStore = useAccessibilityStore()
 const { t } = useI18n()
 // 错误通知队列及当前正在显示的错误
 const errorQueue = ref<Array<{ id: string; title: string; message: string; type: string }>>([])
@@ -182,10 +200,21 @@ const handleEscKey = (event: KeyboardEvent) => {
 
 getInitComplete()
 
-onMounted(() => {
+onMounted(async () => {
   devicePresenter.getDeviceInfo().then((deviceInfo) => {
     isMacOS.value = deviceInfo.platform === 'darwin'
   })
+  
+  // 初始化无障碍设置
+  await accessibilityStore.loadSettings()
+  
+  // 仅在启用无障碍功能时加载CSS
+  if (accessibilityStore.isScreenReaderOptimized || 
+      accessibilityStore.isKeyboardNavigationEnabled || 
+      accessibilityStore.isHighContrastEnabled) {
+    await loadAccessibilityCSS()
+  }
+  
   // 设置初始 body class
   document.body.classList.add(themeStore.themeMode)
   document.body.classList.add(settingsStore.fontSizeClass)
@@ -315,31 +344,85 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="flex flex-col h-screen bg-container">
-    <div
-      class="flex flex-row h-0 flex-grow relative overflow-hidden px-[1px] py-[1px]"
-      :dir="langStore.dir"
-    >
-      <!-- 主内容区域 -->
-
-      <RouterView />
-    </div>
-    <!-- 全局更新弹窗 -->
-    <UpdateDialog />
-    <!-- 全局消息弹窗 -->
-    <MessageDialog />
-    <!-- 全局Toast提示 -->
-    <Toaster />
-    <SelectedTextContextMenu />
-    <TranslatePopup />
-    <!-- 全局模型检查弹窗 -->
-    <ModelCheckDialog
-      :open="modelCheckStore.isDialogOpen"
-      :provider-id="modelCheckStore.currentProviderId"
-      @update:open="
-        (open) => {
-          if (!open) modelCheckStore.closeDialog()
-        }
-      "
-    />
+    <!-- 无障碍提供程序 - 仅在启用无障碍功能时加载 -->
+    <template v-if="accessibilityStore.isScreenReaderOptimized || 
+                   accessibilityStore.isKeyboardNavigationEnabled || 
+                   accessibilityStore.isHighContrastEnabled">
+      <A11yProvider 
+        :debug-mode="false"
+        :show-navigation-hints="accessibilityStore.isKeyboardNavigationEnabled"
+      >
+        <!-- 跳过链接 -->
+        <SkipLinks :show-chat-input="true" />
+        
+        <!-- 无障碍通知器 -->
+        <A11yAnnouncer 
+          :show-debug-info="false"
+          :message-duration="3000"
+          :max-history-display="10"
+        />
+      
+      <div
+        class="flex flex-row h-0 flex-grow relative overflow-hidden px-[1px] py-[1px]"
+        :dir="langStore.dir"
+      >
+        <!-- 主内容区域 -->
+        <div id="main-content" tabindex="-1" role="main" aria-label="Main content">
+          <RouterView />
+        </div>
+      </div>
+      
+      <!-- 全局更新弹窗 -->
+      <UpdateDialog />
+      <!-- 全局消息弹窗 -->
+      <MessageDialog />
+      <!-- 全局Toast提示 -->
+      <Toaster />
+      <SelectedTextContextMenu />
+      <TranslatePopup />
+      <!-- 全局模型检查弹窗 -->
+      <ModelCheckDialog
+        :open="modelCheckStore.isDialogOpen"
+        :provider-id="modelCheckStore.currentProviderId"
+        @update:open="
+          (open) => {
+            if (!open) modelCheckStore.closeDialog()
+          }
+        "
+      />
+    </A11yProvider>
+    </template>
+    
+    <!-- 如果无障碍功能未启用，使用简化的布局 -->
+    <template v-else>
+      <div
+        class="flex flex-row h-0 flex-grow relative overflow-hidden px-[1px] py-[1px]"
+        :dir="langStore.dir"
+      >
+        <!-- 主内容区域 -->
+        <div id="main-content" tabindex="-1" role="main" aria-label="Main content">
+          <RouterView />
+        </div>
+      </div>
+      
+      <!-- 全局更新弹窗 -->
+      <UpdateDialog />
+      <!-- 全局消息弹窗 -->
+      <MessageDialog />
+      <!-- 全局Toast提示 -->
+      <Toaster />
+      <SelectedTextContextMenu />
+      <TranslatePopup />
+      <!-- 全局模型检查弹窗 -->
+      <ModelCheckDialog
+        :open="modelCheckStore.isDialogOpen"
+        :provider-id="modelCheckStore.currentProviderId"
+        @update:open="
+          (open) => {
+            if (!open) modelCheckStore.closeDialog()
+          }
+        "
+      />
+    </template>
   </div>
 </template>

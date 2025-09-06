@@ -29,6 +29,7 @@ import { compare } from 'compare-versions'
 import { defaultShortcutKey, ShortcutKeySetting } from './shortcutKeySettings'
 import { ModelConfigHelper } from './modelConfig'
 import { KnowledgeConfHelper } from './knowledgeConfHelper'
+import { AccessibilitySettings } from '@shared/accessibility'
 
 // 默认系统提示词常量
 const DEFAULT_SYSTEM_PROMPT = `You are DeepChat, a highly capable AI assistant. Your goal is to fully complete the user’s requested task before handing the conversation back to them. Keep working autonomously until the task is fully resolved.
@@ -60,6 +61,7 @@ interface IAppSettings {
   default_system_prompt?: string // 默认系统提示词
   webContentLengthLimit?: number // 网页内容截断长度限制，默认3000字符
   updateChannel?: string // 更新渠道：'stable' | 'canary'
+  accessibilitySettings?: AccessibilitySettings // 无障碍设置
   [key: string]: unknown // 允许任意键，使用unknown类型替代any
 }
 

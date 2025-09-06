@@ -1,0 +1,392 @@
+/* Accessibility CSS classes applied by the accessibility store */
+/* Import high contrast theme */
+@import './themes/high-contrast.css';
+
+/* Reduced Motion - Enhanced */
+:root {
+  --motion-duration-fast: 150ms;
+  --motion-duration-normal: 300ms;
+  --motion-duration-slow: 500ms;
+  --motion-easing: ease-in-out;
+}
+
+.a11y-reduced-motion {
+  --motion-duration-fast: 0ms;
+  --motion-duration-normal: 0ms;
+  --motion-duration-slow: 0ms;
+  --motion-easing: linear;
+}
+
+.a11y-reduced-motion,
+.a11y-reduced-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Allow essential fade animations for reduced motion users */
+.a11y-reduced-motion .essential-fade {
+  animation-duration: 50ms !important;
+  transition-duration: 50ms !important;
+}
+
+/* Completely disable decorative animations */
+.a11y-reduced-motion .decorative-animation,
+.a11y-reduced-motion [data-animation="decorative"] {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Respect system preference */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-fast: 0ms;
+    --motion-duration-normal: 0ms;
+    --motion-duration-slow: 0ms;
+    --motion-easing: linear;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .essential-fade {
+    animation-duration: 50ms !important;
+    transition-duration: 50ms !important;
+  }
+}
+
+/* Font Sizes with Responsive Scaling */
+:root {
+  --font-scale: 1;
+  --font-scale-responsive: 1;
+  --base-font-size: 16px;
+}
+
+.a11y-font-small {
+  font-size: calc(0.875rem * var(--font-scale-responsive, 1));
+  --font-scale: 0.875;
+}
+
+.a11y-font-normal {
+  font-size: calc(1rem * var(--font-scale-responsive, 1));
+  --font-scale: 1;
+}
+
+.a11y-font-large {
+  font-size: calc(1.125rem * var(--font-scale-responsive, 1));
+  --font-scale: 1.125;
+}
+
+.a11y-font-extra-large {
+  font-size: calc(1.25rem * var(--font-scale-responsive, 1));
+  --font-scale: 1.25;
+}
+
+/* Apply font scaling to all text elements */
+.a11y-font-small *,
+.a11y-font-normal *,
+.a11y-font-large *,
+.a11y-font-extra-large * {
+  font-size: inherit;
+}
+
+/* Ensure proper line height scaling */
+.a11y-font-small {
+  line-height: 1.5;
+}
+
+.a11y-font-normal {
+  line-height: 1.5;
+}
+
+.a11y-font-large {
+  line-height: 1.4;
+}
+
+.a11y-font-extra-large {
+  line-height: 1.3;
+}
+
+/* Responsive font scaling adjustments */
+@media (max-width: 640px) {
+  :root {
+    --font-scale-responsive: calc(var(--font-scale, 1) * 0.9);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-scale-responsive: calc(var(--font-scale, 1) * 0.95);
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --font-scale-responsive: calc(var(--font-scale, 1) * 1.05);
+  }
+}
+
+/* Focus Indicators - Enhanced with Multiple Styles */
+
+/* Base focus styles */
+.a11y-show-focus *:focus,
+.a11y-show-focus *:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}
+
+/* Default focus indicator style */
+.a11y-focus-default *:focus,
+.a11y-focus-default *:focus-visible {
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: 2px !important;
+  transition: outline-color 0.2s ease;
+}
+
+.a11y-focus-default button:focus,
+.a11y-focus-default a:focus,
+.a11y-focus-default input:focus,
+.a11y-focus-default textarea:focus,
+.a11y-focus-default select:focus {
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary)) !important;
+}
+
+/* Thick focus indicator style */
+.a11y-focus-thick *:focus,
+.a11y-focus-thick *:focus-visible {
+  outline: 4px solid hsl(var(--primary)) !important;
+  outline-offset: 4px !important;
+  transition: all 0.2s ease;
+}
+
+.a11y-focus-thick button:focus,
+.a11y-focus-thick a:focus,
+.a11y-focus-thick input:focus,
+.a11y-focus-thick textarea:focus,
+.a11y-focus-thick select:focus {
+  box-shadow: 0 0 0 4px hsl(var(--background)), 0 0 0 8px hsl(var(--primary)) !important;
+  transform: scale(1.02);
+}
+
+/* High contrast focus indicator style */
+.a11y-focus-high-contrast *:focus,
+.a11y-focus-high-contrast *:focus-visible {
+  outline: 4px solid #ffff00 !important;
+  outline-offset: 2px !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 8px rgba(255, 255, 0, 0.6) !important;
+  border-radius: 4px !important;
+}
+
+.dark .a11y-focus-high-contrast *:focus,
+.dark .a11y-focus-high-contrast *:focus-visible {
+  outline: 4px solid #ffff00 !important;
+  outline-offset: 2px !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 0 8px rgba(255, 255, 0, 0.6) !important;
+}
+
+/* Focus indicator for interactive elements */
+.a11y-focus-default [role="button"]:focus,
+.a11y-focus-default [role="link"]:focus,
+.a11y-focus-default [role="menuitem"]:focus,
+.a11y-focus-default [role="tab"]:focus {
+  outline: 3px solid hsl(var(--accent)) !important;
+  outline-offset: 2px !important;
+}
+
+.a11y-focus-thick [role="button"]:focus,
+.a11y-focus-thick [role="link"]:focus,
+.a11y-focus-thick [role="menuitem"]:focus,
+.a11y-focus-thick [role="tab"]:focus {
+  outline: 5px solid hsl(var(--accent)) !important;
+  outline-offset: 3px !important;
+}
+
+/* Focus styles for specific components */
+.a11y-show-focus .message:focus,
+.a11y-show-focus .chat-bubble:focus {
+  outline: 2px solid hsl(var(--accent)) !important;
+  outline-offset: 4px !important;
+}
+
+.a11y-focus-thick .message:focus,
+.a11y-focus-thick .chat-bubble:focus {
+  outline: 4px solid hsl(var(--accent)) !important;
+  outline-offset: 6px !important;
+}
+
+/* Focus styles for navigation elements */
+.a11y-show-focus nav a:focus,
+.a11y-show-focus .nav-item:focus {
+  outline: 2px solid hsl(var(--accent)) !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+.a11y-focus-thick nav a:focus,
+.a11y-focus-thick .nav-item:focus {
+  outline: 4px solid hsl(var(--accent)) !important;
+  outline-offset: 4px !important;
+}
+
+/* Skip focus for decorative elements */
+.a11y-show-focus .decorative:focus,
+.a11y-show-focus [aria-hidden="true"]:focus,
+.a11y-show-focus .sr-only:focus {
+  outline: none !important;
+}
+
+/* Focus indicator animation */
+@keyframes focusPulse {
+  0%, 100% {
+    outline-color: hsl(var(--primary));
+  }
+  50% {
+    outline-color: hsl(var(--accent));
+  }
+}
+
+.a11y-focus-default *:focus {
+  animation: focusPulse 2s ease-in-out infinite;
+}
+
+/* Disable animation for reduced motion */
+.a11y-reduced-motion .a11y-focus-default *:focus {
+  animation: none !important;
+}
+
+/* Focus within styles for containers */
+.a11y-show-focus .form-group:focus-within {
+  border: 2px solid hsl(var(--accent));
+  border-radius: 4px;
+}
+
+.a11y-focus-thick .form-group:focus-within {
+  border: 3px solid hsl(var(--accent));
+  border-radius: 6px;
+}
+
+/* Custom focus for dropdown and modal elements */
+.a11y-show-focus .dropdown-item:focus,
+.a11y-show-focus .menu-item:focus {
+  background-color: hsl(var(--accent) / 0.1);
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: -2px;
+}
+
+.a11y-focus-thick .dropdown-item:focus,
+.a11y-focus-thick .menu-item:focus {
+  background-color: hsl(var(--accent) / 0.15);
+  outline: 3px solid hsl(var(--accent));
+  outline-offset: -3px;
+}
+
+/* Enhanced Navigation */
+.a11y-enhanced-nav {
+  /* Enhanced keyboard navigation styles */
+}
+
+.a11y-enhanced-nav button,
+.a11y-enhanced-nav a,
+.a11y-enhanced-nav input,
+.a11y-enhanced-nav select,
+.a11y-enhanced-nav textarea {
+  position: relative;
+}
+
+.a11y-enhanced-nav button:focus-visible,
+.a11y-enhanced-nav a:focus-visible,
+.a11y-enhanced-nav input:focus-visible,
+.a11y-enhanced-nav select:focus-visible,
+.a11y-enhanced-nav textarea:focus-visible {
+  z-index: 1;
+}
+
+/* Simplified Mode */
+.a11y-simplified {
+  /* Simplified interface styles */
+}
+
+.a11y-simplified .complex-element {
+  display: none;
+}
+
+.a11y-simplified .optional-element {
+  display: none;
+}
+
+/* Screen Reader Optimizations */
+.a11y-screen-reader .sr-only {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.a11y-screen-reader .screen-reader-only {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Contrast Levels */
+.a11y-contrast-aa {
+  /* Standard WCAG AA contrast ratios are already met by default theme */
+}
+
+.a11y-contrast-aaa {
+  /* Enhanced contrast for WCAG AAA */
+  --muted-foreground: hsl(0 0% 15%);
+  --secondary-foreground: hsl(0 0% 10%);
+}
+
+.dark .a11y-contrast-aaa {
+  --muted-foreground: hsl(0 0% 85%);
+  --secondary-foreground: hsl(0 0% 90%);
+}
+
+/* Skip Links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 9999;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Screen Reader Only Text */
+.sr-only {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Announcer for screen readers */
+#a11y-announcer {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

@@ -830,5 +830,93 @@
     "resetToDefaultFailed": "重置失败，请重试",
     "clearSuccess": "已清空系统提示词",
     "clearFailed": "清空失败，请重试"
+  },
+  "accessibility": {
+    "title": "无障碍",
+    "description": "配置无障碍选项以改善您的使用体验",
+    "resetDefaults": "重置为默认值",
+    "save": "保存设置",
+    "resetSuccess": "无障碍设置重置成功",
+    "resetError": "重置无障碍设置失败",
+    "saveSuccess": "无障碍设置保存成功",
+    "saveError": "保存无障碍设置失败",
+    "screenReader": {
+      "title": "屏幕阅读器支持",
+      "description": "为屏幕阅读器用户优化界面",
+      "enabled": "启用屏幕阅读器优化",
+      "enabledDesc": "为屏幕阅读器用户优化界面和交互",
+      "announceMessages": "播报新消息",
+      "detailedDesc": "详细的按钮描述",
+      "reduceVerbosity": "减少冗长播报"
+    },
+    "keyboard": {
+      "title": "键盘导航",
+      "description": "增强键盘操作和快捷键支持",
+      "enhanced": "增强键盘导航",
+      "focusIndicators": "显示焦点指示器",
+      "skipLinks": "启用跳过链接",
+      "shortcuts": "键盘快捷键",
+      "skipToMain": "跳转到主内容",
+      "newConversation": "新建对话",
+      "settings": "设置",
+      "help": "帮助",
+      "recordShortcut": "录制快捷键",
+      "recording": "录制中...",
+      "change": "更改",
+      "cancel": "取消",
+      "noShortcut": "未设置快捷键",
+      "recordingHelp": "按下您想要使用的组合键",
+      "shortcutHelp": "点击更改按钮并按下所需的组合键"
+    },
+    "visual": {
+      "title": "视觉无障碍",
+      "description": "调整视觉效果和对比度设置",
+      "highContrast": "高对比度模式",
+      "reducedMotion": "减少动画和动效",
+      "fontSize": "字体大小",
+      "focusIndicator": "焦点指示器样式",
+      "contrastLevel": "对比度级别",
+      "fontSizes": {
+        "small": "小",
+        "normal": "正常",
+        "large": "大",
+        "extraLarge": "特大"
+      },
+      "focusStyles": {
+        "default": "默认",
+        "thick": "粗",
+        "highContrast": "高对比度"
+      },
+      "contrastLevels": {
+        "aa": "AA（标准）",
+        "aaa": "AAA（增强）"
+      }
+    },
+    "cognitive": {
+      "title": "认知辅助",
+      "description": "简化界面并提供认知辅助功能",
+      "simplifiedMode": "简化界面模式",
+      "readingAssistance": "阅读辅助工具",
+      "autoImageDesc": "自动生成图片描述",
+      "stepByStep": "分步指导"
+    },
+    "audio": {
+      "title": "音频和语音",
+      "description": "配置音频反馈和语音通知",
+      "voiceAnnouncements": "语音播报",
+      "soundFeedback": "操作音效反馈",
+      "voiceSpeed": "语音速度",
+      "volume": "播报音量",
+      "voiceSpeeds": {
+        "slow": "慢",
+        "normal": "正常",
+        "fast": "快"
+      },
+      "volumes": {
+        "low": "低",
+        "medium": "中",
+        "high": "高"
+      }
+    }
   }
 }

@@ -73,5 +73,37 @@
   "delete": "删除",
   "save": "保存",
   "clear": "清除",
-  "saved": "已保存"
+  "saved": "已保存",
+  "accessibility": {
+    "skipToMainContent": "跳转到主要内容",
+    "skipToNavigation": "跳转到导航",
+    "skipToSidebar": "跳转到侧边栏",
+    "skipToChatInput": "跳转到聊天输入框",
+    "announcer": {
+      "polite": "礼貌通知区域",
+      "assertive": "重要通知区域",
+      "debugTitle": "无障碍调试面板",
+      "hideDebug": "隐藏调试信息"
+    },
+    "navigation": {
+      "skipToMain": "跳转到主内容",
+      "skipToSidebar": "跳转到侧边栏", 
+      "skipToInput": "跳转到输入框",
+      "focusMessageList": "聚焦到消息列表",
+      "focusSidebar": "聚焦到侧边栏",
+      "focusInputField": "聚焦到输入字段",
+      "focusSettings": "聚焦到设置"
+    },
+    "shortcuts": {
+      "shortcutsAvailable": "键盘快捷键可用",
+      "shortcutsHelp": "键盘快捷键帮助",
+      "shortcutDescription": "按 {keys} 来 {action}"
+    },
+    "status": {
+      "connected": "已连接",
+      "disconnected": "连接断开", 
+      "connecting": "连接中",
+      "error": "连接错误"
+    }
+  }
 }
